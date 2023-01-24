@@ -1,2 +1,1 @@
-start java -jar temperature-jar-with-dependencies.jar
-
+start /b javaw -jar temperature-jar-with-dependencies.jar &
