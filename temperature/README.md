@@ -10,7 +10,7 @@ I have both dongles on my Linux Debian PC and for mqtt I'm using mosquitto. Mosq
 
 For the 433 MHz sensors you'll need to edit the file src/main/resources/mqtt.properties; in it is an assignment to mqtt.sensors. The format is one or more lines of
 ```
-official name from rtl_433=your friendly name
+official-name-from-rtl_433=your-friendly-name
 ```
 with a comma between each. To figure out what model name to use I installed MQTT Explorer on my Windows PC. It's very handy for seeing what's being sent to your mqtt service.
 
