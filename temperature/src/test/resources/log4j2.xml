@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+	<Appenders>
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm} %-5level %logger{36} - %msg%n" />
+		</Console>
+		<File name="file" immediateFlush="true" fileName="d:/tmp/temperature.log">
+			<PatternLayout>
+				<Pattern>%d{HH:mm} %-5level %logger{36} - %msg%n</Pattern>
+			</PatternLayout>
+		</File>
+	</Appenders>
+	<Loggers>
+		<Logger name="file" level="trace">
+			<AppenderRef ref="file" />
+		</Logger>
+		<Root level="warn">
+			<AppenderRef ref="console" />
+		</Root>
+	</Loggers>
+</Configuration>
