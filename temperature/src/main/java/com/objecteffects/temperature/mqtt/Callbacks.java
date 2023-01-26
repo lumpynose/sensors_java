@@ -28,7 +28,7 @@ public class Callbacks implements MqttCallback {
 
     @Override
     public void disconnected(MqttDisconnectResponse disconnectResponse) {
-        this.log.warn("disconnected: " + disconnectResponse);
+        this.log.warn("disconnected: {}", disconnectResponse);
 
         if (disconnectResponse.getException() == null) {
             this.log.warn("no exception");
@@ -47,7 +47,7 @@ public class Callbacks implements MqttCallback {
 
     @Override
     public void mqttErrorOccurred(MqttException exception) {
-        this.log.warn("error occurred: " + exception);
+        this.log.warn("error occurred: {}", exception);
 
         try {
             this.client.reconnect();
@@ -61,7 +61,7 @@ public class Callbacks implements MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
         String messageTxt = new String(mqttMessage.getPayload());
-        this.log.debug("topic: " + topic + ", Message: '" + messageTxt + "'");
+        this.log.debug("topic: {}, message: {}", topic, messageTxt);
 
         this.process.processData(topic, messageTxt);
 
@@ -69,7 +69,7 @@ public class Callbacks implements MqttCallback {
         String responseTopic = props.getResponseTopic();
 
         if (responseTopic != null) {
-            this.log.debug("response topic: " + responseTopic);
+            this.log.debug("response topic: {}", responseTopic);
             String corrData = new String(props.getCorrelationData());
 
             MqttMessage response = new MqttMessage();
@@ -87,9 +87,10 @@ public class Callbacks implements MqttCallback {
 
     @Override
     public void deliveryComplete(IMqttToken token) {
-        this.log.debug("delivery complete: " + token);
+        this.log.debug("delivery complete: {}", token);
     }
 
+    @SuppressWarnings("boxing")
     @Override
     public void connectComplete(boolean reconnect, String serverURI) {
         final AppProperties props = new AppProperties();
@@ -114,11 +115,12 @@ public class Callbacks implements MqttCallback {
             }
         }
 
-        this.log.info("connect complete: " + reconnect);
+        this.log.info("connect complete: {}", reconnect);
     }
 
+    @SuppressWarnings("boxing")
     @Override
     public void authPacketArrived(int reasonCode, MqttProperties properties) {
-        this.log.debug("auth packet arrived: " + reasonCode);
+        this.log.debug("auth packet arrived: {}", reasonCode);
     }
 }

@@ -20,9 +20,10 @@ public class ListenerPaho {
     private static MemoryPersistence persistence = new MemoryPersistence();
     private static MqttClient client;
 
+    @SuppressWarnings("boxing")
     public void connect(final String broker) throws MqttException {
         try {
-            this.log.debug("Connecting to MQTT broker: " + broker);
+            this.log.debug("Connecting to MQTT broker: {}", broker);
 
             final String clientId = UUID.randomUUID().toString();
 
@@ -36,11 +37,11 @@ public class ListenerPaho {
 
             this.log.debug("Connected");
         } catch (MqttException me) {
-            this.log.debug("reason " + me.getReasonCode());
-            this.log.debug("msg " + me.getMessage());
-            this.log.debug("loc " + me.getLocalizedMessage());
-            this.log.debug("cause " + me.getCause());
-            this.log.debug("excep " + me);
+            this.log.debug("reason: {}", me.getReasonCode());
+            this.log.debug("msg: {}", me.getMessage());
+            this.log.debug("loc: {}", me.getLocalizedMessage());
+            this.log.debug("cause: {}", me.getCause());
+            this.log.debug("excep: {}", me);
 
             me.printStackTrace();
 
@@ -52,13 +53,13 @@ public class ListenerPaho {
 
     public void listen(String topic) throws Exception {
         try {
-            this.log.debug("Subscribing to topic " + topic);
+            this.log.debug("Subscribing to topic: {}", topic);
 
             MqttSubscription sub = new MqttSubscription(topic, this.qos);
 
             IMqttToken token = client.subscribe(new MqttSubscription[] { sub });
 
-            this.log.debug("token: " + token.getResponse());
+            this.log.debug("token: {}", token.getResponse());
         } catch (Exception e) {
             e.printStackTrace();
 

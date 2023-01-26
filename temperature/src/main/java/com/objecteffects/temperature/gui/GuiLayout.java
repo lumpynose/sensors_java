@@ -6,7 +6,12 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JFrame;
@@ -23,6 +28,7 @@ import com.objecteffects.temperature.mqtt.SensorData;
 final public class GuiLayout {
     private final Logger log = LogManager.getLogger(this.getClass());
 
+    private static final String NAME = "name";
     private final static String TEMPERATURE = "temperature";
     private final static String TIME = "time";
     private final static String TFORMAT = "%3.0f";
@@ -38,6 +44,7 @@ final public class GuiLayout {
     private final static Font timeFont = new Font("Arial", Font.PLAIN, 12);
 
     private final static Map<String, Map<String, JLabel>> panelsMap = new HashMap<>();
+    private final static List<String> sensorNames = new ArrayList<>();
 
     private static JPanel mainPanel;
 
@@ -60,8 +67,10 @@ final public class GuiLayout {
         frame.setVisible(true);
     }
 
-    public void addSensor(SensorData data) {
-        Map<String, JLabel> labelsMap = new HashMap<>();
+    @SuppressWarnings("boxing")
+    public void addSensor(final SensorData data) {
+        final Map<String, JLabel> labelsMap = new HashMap<>();
+
         panelsMap.put(data.getSensorName(), labelsMap);
 
         final LayoutManager panelLayout = new GridLayout(0, 1, 0, 0);
@@ -69,22 +78,23 @@ final public class GuiLayout {
         final JPanel labelsPanel = new JPanel(panelLayout);
 
         labelsPanel.setName(data.getSensorName());
+
         // labelsPanel.setBorder(BorderFactory.createLineBorder(color1, 1));
         // labelsPanel.setBackground(color1);
 
-        this.log.debug("label: " + data.getSensorName());
+        this.log.debug("label: {}", data.getSensorName());
 
         // funky spaces added to the name to make it not so tight.
         final JLabel label1 = new JLabel(" " + data.getSensorName() + " ", SwingConstants.CENTER);
 
-        label1.setName("name");
+        label1.setName(NAME);
         label1.setOpaque(true);
         // label1.setBorder(BorderFactory.createLineBorder(color1, 1));
         label1.setBackground(color1 /* color2 */);
         label1.setFont(nameFont);
         labelsPanel.add(label1);
 
-        String temperature = String.format(TFORMAT, Double.valueOf((data.getTemperature())));
+        final String temperature = String.format(TFORMAT, Double.valueOf(data.getTemperature()));
         final JLabel label2 = new JLabel(temperature, SwingConstants.CENTER);
 
         label2.setName(TEMPERATURE);
@@ -113,34 +123,55 @@ final public class GuiLayout {
 
         mainPanel.add(labelsPanel);
 
+        sortPanels();
+
         frame.pack();
 
         frame.setVisible(true);
 
-        this.log.debug("component count:" + mainPanel.getComponentCount());
+        this.log.debug("component count: {}", mainPanel.getComponentCount());
 
-        for (Component component : mainPanel.getComponents()) {
-            this.log.debug("component: " + component.getName());
+        for (final Component component : mainPanel.getComponents()) {
+            this.log.debug("component: {}", component.getName());
 
-            if (component instanceof JPanel) {
-                for (Component componentInner : ((JPanel) component).getComponents()) {
-                    this.log.debug("componentInner: " + componentInner.getName());
-                }
-            }
+//            if (component instanceof JPanel) {
+//                for (Component componentInner : ((JPanel) component).getComponents()) {
+//                    this.log.debug("componentInner: {}", componentInner.getName());
+//                }
+//            }
         }
     }
 
-    public void updateSensor(SensorData data) {
+    void sortPanels() {
+        final List<Component> panelList = Arrays.asList(mainPanel.getComponents());
+
+        Collections.sort(panelList, new Comparator<Component>() {
+            @Override
+            public int compare(final Component c1, final Component c2) {
+                return ((JPanel) c1).getName().compareTo(((JPanel) c2).getName());
+            }
+        });
+
+        mainPanel.removeAll();
+
+        for (final Component panel : panelList) {
+            mainPanel.add(panel);
+        }
+    }
+
+    public void updateSensor(final SensorData data) {
         if (!panelsMap.containsKey(data.getSensorName())) {
-            this.log.warn("missing label " + data.getSensorName());
+            this.log.warn("missing label: {}", data.getSensorName());
 
             return;
         }
 
-        Map<String, JLabel> labels = panelsMap.get(data.getSensorName());
+        this.log.debug("updating: {}", data.getSensorName());
+
+        final Map<String, JLabel> labels = panelsMap.get(data.getSensorName());
 
         final JLabel label2 = labels.get(TEMPERATURE);
-        String temperature = String.format(TFORMAT, Double.valueOf((data.getTemperature())));
+        final String temperature = String.format(TFORMAT, Double.valueOf(data.getTemperature()));
         label2.setText(temperature.toString());
 
         final JLabel label3 = labels.get(TIME);

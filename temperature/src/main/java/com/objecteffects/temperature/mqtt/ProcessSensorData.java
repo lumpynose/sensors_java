@@ -39,12 +39,13 @@ public class ProcessSensorData {
         this.propSensors = this.props.getSensors();
     }
 
+    @SuppressWarnings("boxing")
     public void processData(final String topic, final String data) {
         Gson gson = new Gson();
 
         String topic_trimmed = StringUtils.substringAfterLast(topic, "/");
 
-        this.log.debug("topic: " + topic_trimmed);
+        this.log.debug("topic: {}", topic_trimmed);
 
         SensorData target = gson.fromJson(data, SensorData.class);
 
@@ -67,18 +68,18 @@ public class ProcessSensorData {
 
         target.setTimestamp(dtf.format(dateTime));
 
-        this.log.debug("decoded data: " + target.toString());
+        this.log.debug("decoded data: {}", target.toString());
 
         if (sensors.add(target)) {
-            this.log.debug("add target: " + target.getSensorName());
+            this.log.debug("add target: {}", target.getSensorName());
 
             this.guiLayout.addSensor(target);
         } else {
-            this.log.debug("update target: " + target.getSensorName());
+            this.log.debug("update target: {}", target.getSensorName());
 
             this.guiLayout.updateSensor(target);
         }
 
-        this.log.debug("length: " + sensors.size());
+        this.log.debug("length: {}", sensors.size());
     }
 }

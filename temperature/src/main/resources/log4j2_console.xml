@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+	<Properties>
+    	<Property name="logfile">${env:TMP}\temperature.log</Property>
+    	<Property name="pattern">%d{HH:mm} %-5level %logger{36} - %msg%n</Property>
+	</Properties>
+	
+	<Appenders>
+		<!-- not used -->
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout pattern="${pattern}" />
+		</Console>
+		
+		<File name="file" append="true" immediateFlush="true" fileName="${logfile}">
+			<PatternLayout pattern="${pattern}" />
+		</File>
+	</Appenders>
+	
+	<Loggers>
+		<Root level="trace">
+            <AppenderRef ref="console" />
+		</Root>
+	</Loggers>
+</Configuration>
