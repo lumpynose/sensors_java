@@ -3,7 +3,7 @@ package com.objecteffects.temperature.gui;
 class TestGuiLayout {
     private static void runGui() {
         System.out.println("starting test");
-        GuiLayout guiLayout = new GuiLayout();
+        SensorsGridLayout guiLayout = new SensorsGridLayout();
 
         guiLayout.setup();
 

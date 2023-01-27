@@ -25,13 +25,16 @@ import org.apache.logging.log4j.Logger;
 
 import com.objecteffects.temperature.mqtt.SensorData;
 
-final public class GuiLayout {
+final public class SensorsGridLayout implements SensorsLayout {
     private final Logger log = LogManager.getLogger(this.getClass());
 
     private static final String NAME = "name";
     private final static String TEMPERATURE = "temperature";
+    private final static String HUMIDITY = "humidity";
     private final static String TIME = "time";
-    private final static String TFORMAT = "%3.0f";
+    private final static String NFORMAT = " %s ";
+    private final static String TFORMAT = "%3.0f\u00B0 F";
+    private final static String HFORMAT = "%3.0f%%";
 
     private final static JFrame frame = new JFrame("temperatures");
 
@@ -41,10 +44,10 @@ final public class GuiLayout {
 
     private final static Font nameFont = new Font("Arial Bold", Font.BOLD, 24);
     private final static Font temperatureFont = new Font("Arial Bold", Font.BOLD, 20);
+    private final static Font humidityFont = new Font("Arial", Font.PLAIN, 18);
     private final static Font timeFont = new Font("Arial", Font.PLAIN, 12);
 
     private final static Map<String, Map<String, JLabel>> panelsMap = new HashMap<>();
-    private final static List<String> sensorNames = new ArrayList<>();
 
     private static JPanel mainPanel;
 
@@ -79,51 +82,68 @@ final public class GuiLayout {
 
         labelsPanel.setName(data.getSensorName());
 
+        labelsPanel.setBackground(color2);
         // labelsPanel.setBorder(BorderFactory.createLineBorder(color1, 1));
-        // labelsPanel.setBackground(color1);
 
         this.log.debug("label: {}", data.getSensorName());
 
         // funky spaces added to the name to make it not so tight.
-        final JLabel label1 = new JLabel(" " + data.getSensorName() + " ", SwingConstants.CENTER);
+        final JLabel nameLabel = new JLabel(String.format(NFORMAT, data.getSensorName()), SwingConstants.CENTER);
+        // final JLabel nameLabel = new JLabel(data.getSensorName(),
+        // SwingConstants.CENTER);
 
-        label1.setName(NAME);
-        label1.setOpaque(true);
+        nameLabel.setName(NAME);
+        nameLabel.setOpaque(true);
+        nameLabel.setBackground(color1);
+        nameLabel.setFont(nameFont);
+        labelsPanel.add(nameLabel);
         // label1.setBorder(BorderFactory.createLineBorder(color1, 1));
-        label1.setBackground(color1 /* color2 */);
-        label1.setFont(nameFont);
-        labelsPanel.add(label1);
 
         final String temperature = String.format(TFORMAT, Double.valueOf(data.getTemperature()));
-        final JLabel label2 = new JLabel(temperature, SwingConstants.CENTER);
+        final JLabel temperatureLabel = new JLabel(temperature, SwingConstants.CENTER);
 
-        label2.setName(TEMPERATURE);
-        label2.setOpaque(true);
+        temperatureLabel.setName(TEMPERATURE);
+        temperatureLabel.setOpaque(true);
+        temperatureLabel.setBackground(color2);
+        temperatureLabel.setFont(temperatureFont);
         // label2.setBorder(BorderFactory.createLineBorder(color1, 1));
-        label2.setBackground(color2);
-        label2.setFont(temperatureFont);
 
-        labelsPanel.add(label2);
+        labelsPanel.add(temperatureLabel);
 
-        labelsMap.put(TEMPERATURE, label2);
+        labelsMap.put(TEMPERATURE, temperatureLabel);
 
-        final JLabel label3 = new JLabel(data.getTimestamp(), SwingConstants.CENTER);
+        if (Float.isFinite(data.getHumidity())) {
+            final String humidity = String.format(HFORMAT, Double.valueOf(data.getHumidity()));
+            final JLabel humidityLabel = new JLabel(humidity, SwingConstants.CENTER);
 
-        label3.setName(TIME);
-        label3.setOpaque(true);
+            humidityLabel.setName(HUMIDITY);
+            humidityLabel.setOpaque(true);
+            humidityLabel.setBackground(color2);
+            humidityLabel.setFont(humidityFont);
+            // humidityLabel.setBorder(BorderFactory.createLineBorder(color1, 1));
+
+            labelsPanel.add(humidityLabel);
+
+            labelsMap.put(HUMIDITY, humidityLabel);
+        }
+
+        final JLabel timeLabel = new JLabel(data.getTimestamp(), SwingConstants.CENTER);
+
+        timeLabel.setName(TIME);
+        timeLabel.setOpaque(true);
+        timeLabel.setBackground(color2);
+        timeLabel.setFont(timeFont);
         // label3.setBorder(BorderFactory.createLineBorder(color1, 1));
-        label3.setBackground(color2);
-        label3.setFont(timeFont);
 
-        labelsPanel.add(label3);
+        labelsPanel.add(timeLabel);
 
-        labelsMap.put(TIME, label3);
+        labelsMap.put(TIME, timeLabel);
 
         labelsPanel.validate();
 
-        mainPanel.add(labelsPanel);
+        // mainPanel.add(labelsPanel);
 
-        sortPanels();
+        sortPanels(labelsPanel);
 
         frame.pack();
 
@@ -131,19 +151,25 @@ final public class GuiLayout {
 
         this.log.debug("component count: {}", mainPanel.getComponentCount());
 
-        for (final Component component : mainPanel.getComponents()) {
-            this.log.debug("component: {}", component.getName());
+        if (this.log.isDebugEnabled()) {
+            for (final Component component : mainPanel.getComponents()) {
+                this.log.debug("component: {}", component.getName());
 
 //            if (component instanceof JPanel) {
 //                for (Component componentInner : ((JPanel) component).getComponents()) {
 //                    this.log.debug("componentInner: {}", componentInner.getName());
 //                }
 //            }
+            }
         }
     }
 
-    void sortPanels() {
-        final List<Component> panelList = Arrays.asList(mainPanel.getComponents());
+    private void sortPanels(final JPanel labelsPanel) {
+        // final List<Component> panelList = Arrays.asList(mainPanel.getComponents());
+        final List<Component> panelList = new ArrayList<>();
+
+        panelList.addAll(Arrays.asList(mainPanel.getComponents()));
+        panelList.add(labelsPanel);
 
         Collections.sort(panelList, new Comparator<Component>() {
             @Override
@@ -155,6 +181,7 @@ final public class GuiLayout {
         mainPanel.removeAll();
 
         for (final Component panel : panelList) {
+            this.log.debug("panel: {}", panel.getName());
             mainPanel.add(panel);
         }
     }

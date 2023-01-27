@@ -6,7 +6,7 @@ public class SensorData {
     private String sensorName = "";
     private float temperature_F = Float.NaN;
     private float temperature = Float.NaN;
-    private float humidity = 0;
+    private float humidity = Float.NaN;
     private int battery_ok = 0;
     private String timestamp;
 
@@ -14,7 +14,7 @@ public class SensorData {
         return this.timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(final String timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -22,7 +22,7 @@ public class SensorData {
         return this.sensorName;
     }
 
-    public void setSensorName(String sensorName) {
+    public void setSensorName(final String sensorName) {
         this.sensorName = sensorName;
     }
 
@@ -30,7 +30,7 @@ public class SensorData {
         return this.temperature_F;
     }
 
-    public void setTemperature_F(float temperature_F) {
+    public void setTemperature_F(final float temperature_F) {
         this.temperature_F = temperature_F;
     }
 
@@ -38,7 +38,7 @@ public class SensorData {
         return this.temperature;
     }
 
-    public void setTemperature(float temperature) {
+    public void setTemperature(final float temperature) {
         this.temperature = temperature;
     }
 
@@ -46,7 +46,7 @@ public class SensorData {
         return this.humidity;
     }
 
-    public void setHumidity(float humidity) {
+    public void setHumidity(final float humidity) {
         this.humidity = humidity;
     }
 
@@ -54,7 +54,7 @@ public class SensorData {
         return this.battery_ok;
     }
 
-    public void setBattery_ok(int battery_ok) {
+    public void setBattery_ok(final int battery_ok) {
         this.battery_ok = battery_ok;
     }
 
@@ -66,18 +66,18 @@ public class SensorData {
 
     @Override
     public int hashCode() {
-        return (Objects.hashCode(this.sensorName));
+        return Objects.hashCode(this.sensorName);
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj == null)
             return false;
 
         if (getClass() != obj.getClass())
             return false;
 
-        SensorData other = (SensorData) obj;
+        final SensorData other = (SensorData) obj;
 
         return other.sensorName.compareToIgnoreCase(this.sensorName) == 0;
     }

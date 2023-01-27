@@ -2,58 +2,58 @@ package com.objecteffects.temperature.main;
 
 import java.io.IOException;
 
-import com.objecteffects.temperature.gui.GuiLayout;
-import com.objecteffects.temperature.mqtt.ListenerPaho;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.objecteffects.temperature.gui.LayoutModule;
+import com.objecteffects.temperature.gui.SensorsLayout;
+import com.objecteffects.temperature.mqtt.ListenerPaho;
 
 public class MainPaho {
     private final static Logger log = LogManager.getLogger(MainPaho.class);
 
     private final static AppProperties props = new AppProperties();
-    private static final GuiLayout guiLayout = new GuiLayout();
 
-    private static void runGui() {
-        guiLayout.setup();
-
-        log.debug("runGui started");
-    }
-
-    private static void startListener() {
+    private static void startListener(final SensorsLayout guiLayout) {
         try {
             props.loadProperties();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
 
-            throw (new RuntimeException(e));
+            throw new RuntimeException(e);
         }
 
         log.debug("properties: {}", props.getSensors());
 
-        ListenerPaho listenerPaho = new ListenerPaho();
+        final ListenerPaho listenerPaho = new ListenerPaho(guiLayout);
 
         try {
             listenerPaho.connect(props.getBrokerAddress());
 
-            for (String topic : props.getTopics()) {
+            for (final String topic : props.getTopics()) {
                 listenerPaho.listen(topic);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
 
-            throw (new RuntimeException(e));
+            throw new RuntimeException(e);
         }
 
         log.debug("listener started");
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
+        final Injector injector = Guice.createInjector(new LayoutModule());
+        final SensorsLayout guiLayout = injector.getInstance(SensorsLayout.class);
+
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                runGui();
-                startListener();
+                guiLayout.setup();
+
+                startListener(guiLayout);
 
                 log.debug("runnable started");
             }

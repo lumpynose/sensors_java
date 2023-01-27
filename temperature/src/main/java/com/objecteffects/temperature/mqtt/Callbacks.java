@@ -2,6 +2,8 @@ package com.objecteffects.temperature.mqtt;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.paho.mqttv5.client.IMqttToken;
 import org.eclipse.paho.mqttv5.client.MqttCallback;
 import org.eclipse.paho.mqttv5.client.MqttClient;
@@ -10,9 +12,7 @@ import org.eclipse.paho.mqttv5.common.MqttException;
 import org.eclipse.paho.mqttv5.common.MqttMessage;
 import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import com.objecteffects.temperature.gui.SensorsLayout;
 import com.objecteffects.temperature.main.AppProperties;
 
 public class Callbacks implements MqttCallback {
@@ -20,14 +20,16 @@ public class Callbacks implements MqttCallback {
 
     private final MqttClient client;
     private final ProcessSensorData process;
+    private final SensorsLayout guiLayout;
 
-    public Callbacks(MqttClient _client) {
+    public Callbacks(final MqttClient _client, final SensorsLayout _guiLayout) {
         this.client = _client;
-        this.process = new ProcessSensorData();
+        this.guiLayout = _guiLayout;
+        this.process = new ProcessSensorData(_guiLayout);
     }
 
     @Override
-    public void disconnected(MqttDisconnectResponse disconnectResponse) {
+    public void disconnected(final MqttDisconnectResponse disconnectResponse) {
         this.log.warn("disconnected: {}", disconnectResponse);
 
         if (disconnectResponse.getException() == null) {
@@ -38,46 +40,46 @@ public class Callbacks implements MqttCallback {
 
         try {
             this.client.reconnect();
-        } catch (MqttException e) {
+        } catch (final MqttException e) {
             e.printStackTrace();
 
-            throw (new RuntimeException(e));
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void mqttErrorOccurred(MqttException exception) {
+    public void mqttErrorOccurred(final MqttException exception) {
         this.log.warn("error occurred: {}", exception);
 
         try {
             this.client.reconnect();
-        } catch (MqttException e) {
+        } catch (final MqttException e) {
             e.printStackTrace();
 
-            throw (new RuntimeException(e));
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-        String messageTxt = new String(mqttMessage.getPayload());
+    public void messageArrived(final String topic, final MqttMessage mqttMessage) throws Exception {
+        final String messageTxt = new String(mqttMessage.getPayload());
         this.log.debug("topic: {}, message: {}", topic, messageTxt);
 
         this.process.processData(topic, messageTxt);
 
         MqttProperties props = mqttMessage.getProperties();
-        String responseTopic = props.getResponseTopic();
+        final String responseTopic = props.getResponseTopic();
 
         if (responseTopic != null) {
             this.log.debug("response topic: {}", responseTopic);
-            String corrData = new String(props.getCorrelationData());
+            final String corrData = new String(props.getCorrelationData());
 
-            MqttMessage response = new MqttMessage();
+            final MqttMessage response = new MqttMessage();
 
             props = new MqttProperties();
 
             props.setCorrelationData(corrData.getBytes());
-            String content = "Got message with correlation data " + corrData;
+            final String content = "Got message with correlation data " + corrData;
             response.setPayload(content.getBytes());
 
             response.setProperties(props);
@@ -86,32 +88,32 @@ public class Callbacks implements MqttCallback {
     }
 
     @Override
-    public void deliveryComplete(IMqttToken token) {
+    public void deliveryComplete(final IMqttToken token) {
         this.log.debug("delivery complete: {}", token);
     }
 
     @SuppressWarnings("boxing")
     @Override
-    public void connectComplete(boolean reconnect, String serverURI) {
+    public void connectComplete(final boolean reconnect, final String serverURI) {
         final AppProperties props = new AppProperties();
 
         try {
             props.loadProperties();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
 
-            throw (new RuntimeException(e));
+            throw new RuntimeException(e);
         }
 
-        ListenerPaho listenerPaho = new ListenerPaho();
+        final ListenerPaho listenerPaho = new ListenerPaho(this.guiLayout);
 
-        for (String topic : props.getTopics()) {
+        for (final String topic : props.getTopics()) {
             try {
                 listenerPaho.listen(topic);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
 
-                throw (new RuntimeException(e));
+                throw new RuntimeException(e);
             }
         }
 
@@ -120,7 +122,7 @@ public class Callbacks implements MqttCallback {
 
     @SuppressWarnings("boxing")
     @Override
-    public void authPacketArrived(int reasonCode, MqttProperties properties) {
+    public void authPacketArrived(final int reasonCode, final MqttProperties properties) {
         this.log.debug("auth packet arrived: {}", reasonCode);
     }
 }
