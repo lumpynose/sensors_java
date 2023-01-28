@@ -61,11 +61,9 @@ public class MainPaho {
             @Override
             public void run() {
                 guiLayout.setup();
-
-                startListener(guiLayout);
-
-                log.debug("runnable started");
             }
         });
+
+        startListener(guiLayout);
     }
 }
