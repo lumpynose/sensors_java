@@ -94,7 +94,6 @@ public class CallbacksPaho implements MqttCallback {
     }
 
     @Override
-    @SuppressWarnings("boxing")
     public void connectComplete(final boolean reconnect, final String serverURI) {
         final AppProperties props = new AppProperties();
 
@@ -118,12 +117,11 @@ public class CallbacksPaho implements MqttCallback {
             }
         }
 
-        log.info("connect complete: {}", reconnect);
+        log.warn("connect complete: {}", Boolean.toString(reconnect));
     }
 
     @Override
-    @SuppressWarnings("boxing")
     public void authPacketArrived(final int reasonCode, final MqttProperties properties) {
-        log.debug("auth packet arrived: {}", reasonCode);
+        log.debug("auth packet arrived: {}", Integer.toString(reasonCode));
     }
 }
