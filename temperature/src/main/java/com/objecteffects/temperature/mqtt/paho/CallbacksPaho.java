@@ -1,4 +1,4 @@
-package com.objecteffects.temperature.mqtt;
+package com.objecteffects.temperature.mqtt.paho;
 
 import java.io.IOException;
 
@@ -14,15 +14,16 @@ import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
 
 import com.objecteffects.temperature.gui.SensorsLayout;
 import com.objecteffects.temperature.main.AppProperties;
+import com.objecteffects.temperature.sensors.ProcessSensorData;
 
-public class Callbacks implements MqttCallback {
-    private final Logger log = LogManager.getLogger(this.getClass());
+public class CallbacksPaho implements MqttCallback {
+    private final static Logger log = LogManager.getLogger(CallbacksPaho.class);
 
     private final MqttClient client;
     private final ProcessSensorData process;
     private final SensorsLayout guiLayout;
 
-    public Callbacks(final MqttClient _client, final SensorsLayout _guiLayout) {
+    public CallbacksPaho(final MqttClient _client, final SensorsLayout _guiLayout) {
         this.client = _client;
         this.guiLayout = _guiLayout;
         this.process = new ProcessSensorData(_guiLayout);
@@ -30,10 +31,10 @@ public class Callbacks implements MqttCallback {
 
     @Override
     public void disconnected(final MqttDisconnectResponse disconnectResponse) {
-        this.log.warn("disconnected: {}", disconnectResponse);
+        log.warn("disconnected: {}", disconnectResponse);
 
         if (disconnectResponse.getException() == null) {
-            this.log.warn("no exception");
+            log.warn("no exception");
 
             return;
         }
@@ -49,7 +50,7 @@ public class Callbacks implements MqttCallback {
 
     @Override
     public void mqttErrorOccurred(final MqttException exception) {
-        this.log.warn("error occurred: {}", exception);
+        log.warn("error occurred: {}", exception);
 
         try {
             this.client.reconnect();
@@ -63,7 +64,7 @@ public class Callbacks implements MqttCallback {
     @Override
     public void messageArrived(final String topic, final MqttMessage mqttMessage) throws Exception {
         final String messageTxt = new String(mqttMessage.getPayload());
-        this.log.debug("topic: {}, message: {}", topic, messageTxt);
+        log.debug("topic: {}, message: {}", topic, messageTxt);
 
         this.process.processData(topic, messageTxt);
 
@@ -71,7 +72,7 @@ public class Callbacks implements MqttCallback {
         final String responseTopic = props.getResponseTopic();
 
         if (responseTopic != null) {
-            this.log.debug("response topic: {}", responseTopic);
+            log.debug("response topic: {}", responseTopic);
             final String corrData = new String(props.getCorrelationData());
 
             final MqttMessage response = new MqttMessage();
@@ -89,11 +90,11 @@ public class Callbacks implements MqttCallback {
 
     @Override
     public void deliveryComplete(final IMqttToken token) {
-        this.log.debug("delivery complete: {}", token);
+        log.debug("delivery complete: {}", token);
     }
 
-    @SuppressWarnings("boxing")
     @Override
+    @SuppressWarnings("boxing")
     public void connectComplete(final boolean reconnect, final String serverURI) {
         final AppProperties props = new AppProperties();
 
@@ -105,11 +106,11 @@ public class Callbacks implements MqttCallback {
             throw new RuntimeException(e);
         }
 
-        final ListenerPaho listenerPaho = new ListenerPaho(this.guiLayout);
+        final ListenerPaho listener = new ListenerPaho(this.guiLayout);
 
         for (final String topic : props.getTopics()) {
             try {
-                listenerPaho.listen(topic);
+                listener.listen(topic);
             } catch (final Exception e) {
                 e.printStackTrace();
 
@@ -117,12 +118,12 @@ public class Callbacks implements MqttCallback {
             }
         }
 
-        this.log.info("connect complete: {}", reconnect);
+        log.info("connect complete: {}", reconnect);
     }
 
-    @SuppressWarnings("boxing")
     @Override
+    @SuppressWarnings("boxing")
     public void authPacketArrived(final int reasonCode, final MqttProperties properties) {
-        this.log.debug("auth packet arrived: {}", reasonCode);
+        log.debug("auth packet arrived: {}", reasonCode);
     }
 }

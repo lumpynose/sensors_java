@@ -1,4 +1,4 @@
-package com.objecteffects.temperature.mqtt;
+package com.objecteffects.temperature.sensors;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -18,27 +18,27 @@ import com.objecteffects.temperature.gui.SensorsLayout;
 import com.objecteffects.temperature.main.AppProperties;
 
 public class ProcessSensorData {
-    private final Logger log = LogManager.getLogger(this.getClass());
+    private final static Logger log = LogManager.getLogger(ProcessSensorData.class);
 
     private final static Collection<SensorData> sensors = Collections.synchronizedSet(new HashSet<>());
-    private final AppProperties props;
-    private final Map<String, String> propSensors;
-    private final SensorsLayout guiLayout;
+    private static AppProperties props;
+    private static Map<String, String> propSensors = null;
+    private static SensorsLayout guiLayout;
 
     @Inject
     public ProcessSensorData(final SensorsLayout _guiLayout) {
-        this.guiLayout = _guiLayout;
-        this.props = new AppProperties();
+        guiLayout = _guiLayout;
+        props = new AppProperties();
 
         try {
-            this.props.loadProperties();
+            props.loadProperties();
         } catch (final IOException e) {
             e.printStackTrace();
 
             throw new RuntimeException(e);
         }
 
-        this.propSensors = this.props.getSensors();
+        propSensors = props.getSensors();
     }
 
     @SuppressWarnings("boxing")
@@ -47,15 +47,15 @@ public class ProcessSensorData {
 
         final String topic_trimmed = StringUtils.substringAfterLast(topic, "/");
 
-        this.log.debug("topic: {}", topic_trimmed);
+        log.debug("topic: {}", topic_trimmed);
 
         final SensorData target = gson.fromJson(data, SensorData.class);
 
-        if (!this.propSensors.containsKey(topic_trimmed)) {
+        if (!propSensors.containsKey(topic_trimmed)) {
             return;
         }
 
-        target.setSensorName(this.propSensors.get(topic_trimmed));
+        target.setSensorName(propSensors.get(topic_trimmed));
 
         if (Float.isFinite(target.getTemperature_F())) {
             target.setTemperature(target.getTemperature_F());
@@ -70,18 +70,18 @@ public class ProcessSensorData {
 
         target.setTimestamp(dtf.format(dateTime));
 
-        this.log.debug("decoded data: {}", target.toString());
+        log.debug("decoded data: {}", target.toString());
 
         if (sensors.add(target)) {
-            this.log.debug("add target: {}", target.getSensorName());
+            log.debug("add target: {}", target.getSensorName());
 
-            this.guiLayout.addSensor(target);
+            guiLayout.addSensor(target);
         } else {
-            this.log.debug("update target: {}", target.getSensorName());
+            log.debug("update target: {}", target.getSensorName());
 
-            this.guiLayout.updateSensor(target);
+            guiLayout.updateSensor(target);
         }
 
-        this.log.debug("length: {}", sensors.size());
+        log.debug("length: {}", sensors.size());
     }
 }

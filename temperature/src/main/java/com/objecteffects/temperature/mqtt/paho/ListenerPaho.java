@@ -1,4 +1,4 @@
-package com.objecteffects.temperature.mqtt;
+package com.objecteffects.temperature.mqtt.paho;
 
 import java.util.UUID;
 
@@ -11,20 +11,18 @@ import org.eclipse.paho.mqttv5.client.persist.MemoryPersistence;
 import org.eclipse.paho.mqttv5.common.MqttException;
 import org.eclipse.paho.mqttv5.common.MqttSubscription;
 
-import com.google.inject.Inject;
 import com.objecteffects.temperature.gui.SensorsLayout;
 
 public class ListenerPaho {
-    private final Logger log = LogManager.getLogger(this.getClass());
+    private final static Logger log = LogManager.getLogger(ListenerPaho.class);
 
     private final int qos = 1;
 
-    private MqttClient client;
+    private static MqttClient client;
 
-    private final MemoryPersistence persistence = new MemoryPersistence();
+    private static final MemoryPersistence persistence = new MemoryPersistence();
     private final SensorsLayout guiLayout;
 
-    @Inject
     public ListenerPaho(final SensorsLayout _guiLayout) {
         this.guiLayout = _guiLayout;
     }
@@ -32,43 +30,43 @@ public class ListenerPaho {
     @SuppressWarnings("boxing")
     public void connect(final String broker) throws MqttException {
         try {
-            this.log.debug("Connecting to MQTT broker: {}", broker);
+            log.debug("Connecting to MQTT broker: {}", broker);
 
             final String clientId = UUID.randomUUID().toString();
 
-            this.client = new MqttClient(broker, clientId, this.persistence);
+            client = new MqttClient(broker, clientId, persistence);
 
             final MqttConnectionOptions connOpts = new MqttConnectionOptions();
             connOpts.setCleanStart(true);
             connOpts.setAutomaticReconnect(true);
 
-            this.client.connect(connOpts);
+            client.connect(connOpts);
 
-            this.log.debug("Connected");
+            log.debug("Connected");
         } catch (final MqttException me) {
-            this.log.debug("reason: {}", me.getReasonCode());
-            this.log.debug("msg: {}", me.getMessage());
-            this.log.debug("loc: {}", me.getLocalizedMessage());
-            this.log.debug("cause: {}", me.getCause());
-            this.log.debug("excep: {}", me);
+            log.debug("reason: {}", me.getReasonCode());
+            log.debug("msg: {}", me.getMessage());
+            log.debug("loc: {}", me.getLocalizedMessage());
+            log.debug("cause: {}", me.getCause());
+            log.debug("excep: {}", me);
 
             me.printStackTrace();
 
             throw me;
         }
 
-        this.client.setCallback(new Callbacks(this.client, this.guiLayout));
+        client.setCallback(new CallbacksPaho(client, this.guiLayout));
     }
 
     public void listen(final String topic) throws Exception {
         try {
-            this.log.debug("Subscribing to topic: {}", topic);
+            log.debug("Subscribing to topic: {}", topic);
 
             final MqttSubscription sub = new MqttSubscription(topic, this.qos);
 
-            final IMqttToken token = this.client.subscribe(new MqttSubscription[] { sub });
+            final IMqttToken token = client.subscribe(new MqttSubscription[] { sub });
 
-            this.log.debug("token: {}", token.getResponse());
+            log.debug("token: {}", token.getResponse());
         } catch (final Exception e) {
             e.printStackTrace();
 

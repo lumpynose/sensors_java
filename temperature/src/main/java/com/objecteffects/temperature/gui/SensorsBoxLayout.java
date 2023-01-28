@@ -23,10 +23,10 @@ import javax.swing.WindowConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.objecteffects.temperature.mqtt.SensorData;
+import com.objecteffects.temperature.sensors.SensorData;
 
 final public class SensorsBoxLayout implements SensorsLayout {
-    private final Logger log = LogManager.getLogger(this.getClass());
+    private final static Logger log = LogManager.getLogger(SensorsBoxLayout.class);
 
     private static final String NAME = "name";
     private final static String TEMPERATURE = "temperature";
@@ -87,7 +87,7 @@ final public class SensorsBoxLayout implements SensorsLayout {
         labelsPanel.setBackground(color2);
         labelsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        this.log.debug("label: {}", data.getSensorName());
+        log.debug("label: {}", data.getSensorName());
 
         // funky spaces added to the name to make it not so tight.
         final JLabel nameLabel = new JLabel(String.format(NFORMAT, data.getSensorName()), SwingConstants.CENTER);
@@ -148,11 +148,11 @@ final public class SensorsBoxLayout implements SensorsLayout {
 
         frame.setVisible(true);
 
-        this.log.debug("component count: {}", mainPanel.getComponentCount());
+        log.debug("component count: {}", mainPanel.getComponentCount());
 
-        if (this.log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             for (final Component component : mainPanel.getComponents()) {
-                this.log.debug("component: {}", component.getName());
+                log.debug("component: {}", component.getName());
 
 //            if (component instanceof JPanel) {
 //                for (Component componentInner : ((JPanel) component).getComponents()) {
@@ -180,7 +180,7 @@ final public class SensorsBoxLayout implements SensorsLayout {
         mainPanel.removeAll();
 
         for (final Component panel : panelList) {
-            this.log.debug("panel: {}", panel.getName());
+            log.debug("panel: {}", panel.getName());
             mainPanel.add(panel);
         }
     }
@@ -188,12 +188,12 @@ final public class SensorsBoxLayout implements SensorsLayout {
     @Override
     public void updateSensor(final SensorData data) {
         if (!panelsMap.containsKey(data.getSensorName())) {
-            this.log.warn("missing label: {}", data.getSensorName());
+            log.warn("missing label: {}", data.getSensorName());
 
             return;
         }
 
-        this.log.debug("updating: {}", data.getSensorName());
+        log.debug("updating: {}", data.getSensorName());
 
         final Map<String, JLabel> labels = panelsMap.get(data.getSensorName());
 

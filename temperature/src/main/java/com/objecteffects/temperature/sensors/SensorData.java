@@ -1,4 +1,4 @@
-package com.objecteffects.temperature.mqtt;
+package com.objecteffects.temperature.sensors;
 
 import java.util.Objects;
 
