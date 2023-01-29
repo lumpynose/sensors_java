@@ -42,7 +42,9 @@ public class CallbacksPaho implements MqttCallback {
         try {
             this.client.reconnect();
         } catch (final MqttException e) {
-            e.printStackTrace();
+            for (final StackTraceElement ste : e.getStackTrace()) {
+                log.warn(ste.toString());
+            }
 
             throw new RuntimeException(e);
         }
@@ -55,7 +57,9 @@ public class CallbacksPaho implements MqttCallback {
         try {
             this.client.reconnect();
         } catch (final MqttException e) {
-            e.printStackTrace();
+            for (final StackTraceElement ste : e.getStackTrace()) {
+                log.warn(ste.toString());
+            }
 
             throw new RuntimeException(e);
         }
@@ -100,7 +104,9 @@ public class CallbacksPaho implements MqttCallback {
         try {
             props.loadProperties();
         } catch (final IOException e) {
-            e.printStackTrace();
+            for (final StackTraceElement ste : e.getStackTrace()) {
+                log.warn(ste.toString());
+            }
 
             throw new RuntimeException(e);
         }
@@ -111,7 +117,9 @@ public class CallbacksPaho implements MqttCallback {
             try {
                 listener.listen(topic);
             } catch (final Exception e) {
-                e.printStackTrace();
+                for (final StackTraceElement ste : e.getStackTrace()) {
+                    log.warn(ste.toString());
+                }
 
                 throw new RuntimeException(e);
             }

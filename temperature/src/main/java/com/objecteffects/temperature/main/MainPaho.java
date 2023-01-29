@@ -29,7 +29,9 @@ public class MainPaho {
         try {
             props.loadProperties();
         } catch (final IOException e) {
-            e.printStackTrace();
+            for (final StackTraceElement ste : e.getStackTrace()) {
+                log.warn(ste.toString());
+            }
 
             throw new RuntimeException(e);
         }
@@ -45,7 +47,9 @@ public class MainPaho {
                 listener.listen(topic);
             }
         } catch (final Exception e) {
-            e.printStackTrace();
+            for (final StackTraceElement ste : e.getStackTrace()) {
+                log.warn(ste.toString());
+            }
 
             throw new RuntimeException(e);
         }

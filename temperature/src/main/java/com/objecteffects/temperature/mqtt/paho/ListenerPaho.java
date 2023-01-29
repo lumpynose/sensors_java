@@ -50,7 +50,9 @@ public class ListenerPaho {
             log.debug("cause: {}", me.getCause());
             log.debug("excep: {}", me);
 
-            me.printStackTrace();
+            for (final StackTraceElement ste : me.getStackTrace()) {
+                log.warn(ste.toString());
+            }
 
             throw me;
         }
@@ -68,7 +70,9 @@ public class ListenerPaho {
 
             log.debug("token: {}", token.getResponse());
         } catch (final Exception e) {
-            e.printStackTrace();
+            for (final StackTraceElement ste : e.getStackTrace()) {
+                log.warn(ste.toString());
+            }
 
             throw e;
         }
