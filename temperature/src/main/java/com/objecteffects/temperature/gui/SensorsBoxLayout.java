@@ -34,10 +34,12 @@ final public class SensorsBoxLayout implements SensorsLayout {
     private final static String HUMIDITY = "humidity";
     private final static String TIME = "time";
     private final static String LUMINANCE = "luminance";
+    private final static String PRESSURE = "pressure";
     private final static String NFORMAT = " %s ";
     private final static String TFORMAT = "%3.0f\u00B0 F";
     private final static String HFORMAT = "%3.0f%%";
-    private final static String LUXFORMAT = "%d lux";
+    private final static String LUMFORMAT = "%d lux";
+    private final static String PRESSFORMAT = "%3.0f mb";
 
     private final static JFrame frame = new JFrame("temperatures");
 
@@ -51,6 +53,7 @@ final public class SensorsBoxLayout implements SensorsLayout {
     private final static Font humidityFont = new Font("Arial", Font.PLAIN, 18);
     private final static Font illuminanceFont = new Font("Arial", Font.PLAIN,
             18);
+    private final static Font pressureFont = new Font("Arial", Font.PLAIN, 18);
     private final static Font timeFont = new Font("Arial", Font.PLAIN, 12);
 
     private final static Map<String, Map<String, JLabel>> panelsMap = new HashMap<>();
@@ -141,9 +144,9 @@ final public class SensorsBoxLayout implements SensorsLayout {
             labelsMap.put(HUMIDITY, humidityLabel);
         }
 
-        if (data.getIlluminance_lux() > Integer.MIN_VALUE) {
-            final String luminance = String.format(LUXFORMAT,
-                    data.getIlluminance_lux());
+        if (data.getLuminance() > Integer.MIN_VALUE) {
+            final String luminance = String.format(LUMFORMAT,
+                    data.getLuminance());
             final JLabel luminanceLabel = new JLabel(luminance,
                     SwingConstants.CENTER);
 
@@ -156,6 +159,23 @@ final public class SensorsBoxLayout implements SensorsLayout {
             labelsPanel.add(luminanceLabel);
 
             labelsMap.put(LUMINANCE, luminanceLabel);
+        }
+
+        if (Float.isFinite(data.getPressure())) {
+            final String pressure = String.format(PRESSFORMAT,
+                    data.getPressure());
+            final JLabel pressureLabel = new JLabel(pressure,
+                    SwingConstants.CENTER);
+
+            pressureLabel.setName(PRESSURE);
+            pressureLabel.setOpaque(true);
+            pressureLabel.setBackground(color2);
+            pressureLabel.setFont(pressureFont);
+            pressureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            labelsPanel.add(pressureLabel);
+
+            labelsMap.put(PRESSURE, pressureLabel);
         }
 
         final JLabel timeLabel = new JLabel(data.getTimestamp(),
@@ -230,12 +250,33 @@ final public class SensorsBoxLayout implements SensorsLayout {
 
         final Map<String, JLabel> labels = panelsMap.get(data.getSensorName());
 
-        final JLabel label2 = labels.get(TEMPERATURE);
+        final JLabel temperatureLabel = labels.get(TEMPERATURE);
         final String temperature = String.format(TFORMAT,
                 Double.valueOf(data.getTemperature()));
-        label2.setText(temperature.toString());
+        temperatureLabel.setText(temperature);
 
-        final JLabel label3 = labels.get(TIME);
-        label3.setText(data.getTimestamp());
+        if (Float.isFinite(data.getHumidity())) {
+            final JLabel humidityLabel = labels.get(HUMIDITY);
+            final String humidity = String.format(HFORMAT,
+                    Double.valueOf(data.getHumidity()));
+            humidityLabel.setText(humidity);
+        }
+
+        if (data.getLuminance() > Integer.MIN_VALUE) {
+            final JLabel luminanceLabel = labels.get(LUMINANCE);
+            final String luminance = String.format(LUMFORMAT,
+                    Double.valueOf(data.getLuminance()));
+            luminanceLabel.setText(luminance);
+        }
+
+        if (Float.isFinite(data.getPressure())) {
+            final JLabel pressureLabel = labels.get(PRESSURE);
+            final String pressure = String.format(PRESSFORMAT,
+                    Double.valueOf(data.getPressure()));
+            pressureLabel.setText(pressure);
+        }
+
+        final JLabel timeLabel = labels.get(TIME);
+        timeLabel.setText(data.getTimestamp());
     }
 }
