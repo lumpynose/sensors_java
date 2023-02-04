@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="INFO">
-	<Appenders>
-		<Console name="console" target="SYSTEM_OUT">
-			<PatternLayout pattern="%d{HH:mm} %-5level %logger{36} - %msg%n" />
-		</Console>
-		<File name="file" immediateFlush="true" fileName="d:/tmp/temperature.log">
-			<PatternLayout>
-				<Pattern>%d{HH:mm} %-5level %logger{36} - %msg%n</Pattern>
-			</PatternLayout>
-		</File>
-	</Appenders>
-	<Loggers>
-		<Logger name="file" level="trace">
-			<AppenderRef ref="file" />
-		</Logger>
-		<Root level="warn">
-			<AppenderRef ref="console" />
-		</Root>
-	</Loggers>
+<Configuration status="warn">
+    <Properties>
+        <Property name="logfile">${env:TMP}\temperature.log</Property>
+        <Property name="pattern">%-5level %date{yyyy-MMM-dd HH:mm} [%thread] %logger{2}.%method - %msg%n</Property>
+    </Properties>
+    
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${pattern}" />
+        </Console>
+    </Appenders>
+    
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="console" />
+        </Root>
+    </Loggers>
 </Configuration>

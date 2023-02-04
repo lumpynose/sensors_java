@@ -23,7 +23,8 @@ public class CallbacksPaho implements MqttCallback {
     private final ProcessSensorData process;
     private final SensorsLayout guiLayout;
 
-    public CallbacksPaho(final MqttClient _client, final SensorsLayout _guiLayout) {
+    public CallbacksPaho(final MqttClient _client,
+            final SensorsLayout _guiLayout) {
         this.client = _client;
         this.guiLayout = _guiLayout;
         this.process = new ProcessSensorData(_guiLayout);
@@ -41,7 +42,8 @@ public class CallbacksPaho implements MqttCallback {
 
         try {
             this.client.reconnect();
-        } catch (final MqttException e) {
+        }
+        catch (final MqttException e) {
             for (final StackTraceElement ste : e.getStackTrace()) {
                 log.warn(ste.toString());
             }
@@ -56,7 +58,8 @@ public class CallbacksPaho implements MqttCallback {
 
         try {
             this.client.reconnect();
-        } catch (final MqttException e) {
+        }
+        catch (final MqttException e) {
             for (final StackTraceElement ste : e.getStackTrace()) {
                 log.warn(ste.toString());
             }
@@ -66,7 +69,8 @@ public class CallbacksPaho implements MqttCallback {
     }
 
     @Override
-    public void messageArrived(final String topic, final MqttMessage mqttMessage) throws Exception {
+    public void messageArrived(final String topic,
+            final MqttMessage mqttMessage) throws Exception {
         final String messageTxt = new String(mqttMessage.getPayload());
         log.debug("topic: {}, message: {}", topic, messageTxt);
 
@@ -84,7 +88,8 @@ public class CallbacksPaho implements MqttCallback {
             props = new MqttProperties();
 
             props.setCorrelationData(corrData.getBytes());
-            final String content = "Got message with correlation data " + corrData;
+            final String content = "Got message with correlation data "
+                    + corrData;
             response.setPayload(content.getBytes());
 
             response.setProperties(props);
@@ -98,12 +103,14 @@ public class CallbacksPaho implements MqttCallback {
     }
 
     @Override
-    public void connectComplete(final boolean reconnect, final String serverURI) {
+    public void connectComplete(final boolean reconnect,
+            final String serverURI) {
         final AppProperties props = new AppProperties();
 
         try {
             props.loadProperties();
-        } catch (final IOException e) {
+        }
+        catch (final IOException e) {
             for (final StackTraceElement ste : e.getStackTrace()) {
                 log.warn(ste.toString());
             }
@@ -116,7 +123,8 @@ public class CallbacksPaho implements MqttCallback {
         for (final String topic : props.getTopics()) {
             try {
                 listener.listen(topic);
-            } catch (final Exception e) {
+            }
+            catch (final Exception e) {
                 for (final StackTraceElement ste : e.getStackTrace()) {
                     log.warn(ste.toString());
                 }
@@ -129,7 +137,8 @@ public class CallbacksPaho implements MqttCallback {
     }
 
     @Override
-    public void authPacketArrived(final int reasonCode, final MqttProperties properties) {
+    public void authPacketArrived(final int reasonCode,
+            final MqttProperties properties) {
         log.debug("auth packet arrived: {}", Integer.toString(reasonCode));
     }
 }

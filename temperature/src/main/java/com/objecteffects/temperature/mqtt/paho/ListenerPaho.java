@@ -43,7 +43,8 @@ public class ListenerPaho {
             client.connect(connOpts);
 
             log.debug("Connected");
-        } catch (final MqttException me) {
+        }
+        catch (final MqttException me) {
             log.debug("reason: {}", me.getReasonCode());
             log.debug("msg: {}", me.getMessage());
             log.debug("loc: {}", me.getLocalizedMessage());
@@ -66,10 +67,12 @@ public class ListenerPaho {
 
             final MqttSubscription sub = new MqttSubscription(topic, this.qos);
 
-            final IMqttToken token = client.subscribe(new MqttSubscription[] { sub });
+            final IMqttToken token = client
+                    .subscribe(new MqttSubscription[] { sub });
 
             log.debug("token: {}", token.getResponse());
-        } catch (final Exception e) {
+        }
+        catch (final Exception e) {
             for (final StackTraceElement ste : e.getStackTrace()) {
                 log.warn(ste.toString());
             }

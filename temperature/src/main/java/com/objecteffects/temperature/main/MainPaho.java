@@ -17,7 +17,8 @@ public class MainPaho {
 
         if (Objects.equals(jar, "jar")) {
             System.setProperty("log4j.configurationFile", "log4j2_file.xml");
-        } else {
+        }
+        else {
             System.setProperty("log4j.configurationFile", "log4j2_console.xml");
         }
     }
@@ -28,7 +29,8 @@ public class MainPaho {
     private static void startListener(final SensorsLayout guiLayout) {
         try {
             props.loadProperties();
-        } catch (final IOException e) {
+        }
+        catch (final IOException e) {
             for (final StackTraceElement ste : e.getStackTrace()) {
                 log.warn(ste.toString());
             }
@@ -46,7 +48,8 @@ public class MainPaho {
             for (final String topic : props.getTopics()) {
                 listener.listen(topic);
             }
-        } catch (final Exception e) {
+        }
+        catch (final Exception e) {
             for (final StackTraceElement ste : e.getStackTrace()) {
                 log.warn(ste.toString());
             }
@@ -59,7 +62,8 @@ public class MainPaho {
 
     public static void main(final String[] args) {
         final Injector injector = Guice.createInjector(new GuiceModule());
-        final SensorsLayout guiLayout = injector.getInstance(SensorsLayout.class);
+        final SensorsLayout guiLayout = injector
+                .getInstance(SensorsLayout.class);
 
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override

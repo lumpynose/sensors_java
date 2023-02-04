@@ -18,9 +18,12 @@ import com.objecteffects.temperature.gui.SensorsLayout;
 import com.objecteffects.temperature.main.AppProperties;
 
 public class ProcessSensorData {
-    private final static Logger log = LogManager.getLogger(ProcessSensorData.class);
+    private final static Logger log = LogManager
+            .getLogger(ProcessSensorData.class);
 
-    private final static Collection<SensorData> sensors = Collections.synchronizedSet(new HashSet<>());
+    private final static Collection<SensorData> sensors = Collections
+            .synchronizedSet(new HashSet<>());
+    private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
     private static AppProperties props;
     private static Map<String, String> propSensors = null;
     private static SensorsLayout guiLayout;
@@ -32,7 +35,8 @@ public class ProcessSensorData {
 
         try {
             props.loadProperties();
-        } catch (final IOException e) {
+        }
+        catch (final IOException e) {
             e.printStackTrace();
 
             throw new RuntimeException(e);
@@ -59,16 +63,17 @@ public class ProcessSensorData {
 
         if (Float.isFinite(target.getTemperature_F())) {
             target.setTemperature(target.getTemperature_F());
-        } else {
+        }
+        else {
             // (0°C × 9/5) + 32 = 32°F
-            final float fahr = (float) (target.getTemperature() * (9.0 / 5.0) + 32.0);
+            final float fahr = (float) (target.getTemperature() * (9.0 / 5.0)
+                    + 32.0);
             target.setTemperature(fahr);
         }
 
         final LocalDateTime dateTime = LocalDateTime.now();
-        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
 
-        target.setTimestamp(dtf.format(dateTime));
+        target.setTimestamp(this.dtf.format(dateTime));
 
         log.debug("decoded data: {}", target.toString());
 
@@ -76,7 +81,8 @@ public class ProcessSensorData {
             log.debug("add target: {}", target.getSensorName());
 
             guiLayout.addSensor(target);
-        } else {
+        }
+        else {
             log.debug("update target: {}", target.getSensorName());
 
             guiLayout.updateSensor(target);
