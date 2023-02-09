@@ -9,8 +9,17 @@ public class SensorData {
     private float humidity = Float.NaN;
     private int battery_ok = 0;
     private String timestamp;
-    private int luminance = Integer.MIN_VALUE;
+    private int illuminance_lux = Integer.MIN_VALUE;
     private float pressure = Float.NaN;
+    private int voc = Integer.MIN_VALUE;
+
+    public int getVoc() {
+        return this.voc;
+    }
+
+    public void setVoc(final int _voc) {
+        this.voc = _voc;
+    }
 
     public float getPressure() {
         return this.pressure;
@@ -21,11 +30,11 @@ public class SensorData {
     }
 
     public int getLuminance() {
-        return this.luminance;
+        return this.illuminance_lux;
     }
 
     public void setLuminance(final int _luminance) {
-        this.luminance = _luminance;
+        this.illuminance_lux = _luminance;
     }
 
     public String getTimestamp() {

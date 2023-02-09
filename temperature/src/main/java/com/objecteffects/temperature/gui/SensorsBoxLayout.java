@@ -35,11 +35,13 @@ final public class SensorsBoxLayout implements SensorsLayout {
     private final static String TIME = "time";
     private final static String LUMINANCE = "luminance";
     private final static String PRESSURE = "pressure";
+    private final static String VOC = "pressure";
     private final static String NFORMAT = " %s ";
     private final static String TFORMAT = "%3.0f\u00B0 F";
     private final static String HFORMAT = "%3.0f%%";
     private final static String LUMFORMAT = "%d lux";
     private final static String PRESSFORMAT = "%3.0f mb";
+    private final static String VOCFORMAT = "%d voc";
 
     private final static JFrame frame = new JFrame("temperatures");
 
@@ -51,9 +53,9 @@ final public class SensorsBoxLayout implements SensorsLayout {
     private final static Font temperatureFont = new Font("Arial Bold",
             Font.BOLD, 20);
     private final static Font humidityFont = new Font("Arial", Font.PLAIN, 18);
-    private final static Font illuminanceFont = new Font("Arial", Font.PLAIN,
-            18);
-    private final static Font pressureFont = new Font("Arial", Font.PLAIN, 18);
+    private final static Font luminanceFont = new Font("Arial", Font.PLAIN, 16);
+    private final static Font pressureFont = new Font("Arial", Font.PLAIN, 16);
+    private final static Font vocFont = new Font("Arial", Font.PLAIN, 16);
     private final static Font timeFont = new Font("Arial", Font.PLAIN, 12);
 
     private final static Map<String, Map<String, JLabel>> panelsMap = new HashMap<>();
@@ -82,7 +84,6 @@ final public class SensorsBoxLayout implements SensorsLayout {
     }
 
     @Override
-    @SuppressWarnings("boxing")
     public void addSensor(final SensorData data) {
         final Map<String, JLabel> labelsMap = new HashMap<>();
 
@@ -146,14 +147,14 @@ final public class SensorsBoxLayout implements SensorsLayout {
 
         if (data.getLuminance() > Integer.MIN_VALUE) {
             final String luminance = String.format(LUMFORMAT,
-                    data.getLuminance());
+                    Integer.valueOf(data.getLuminance()));
             final JLabel luminanceLabel = new JLabel(luminance,
                     SwingConstants.CENTER);
 
             luminanceLabel.setName(LUMINANCE);
             luminanceLabel.setOpaque(true);
             luminanceLabel.setBackground(color2);
-            luminanceLabel.setFont(illuminanceFont);
+            luminanceLabel.setFont(luminanceFont);
             luminanceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
             labelsPanel.add(luminanceLabel);
@@ -163,7 +164,7 @@ final public class SensorsBoxLayout implements SensorsLayout {
 
         if (Float.isFinite(data.getPressure())) {
             final String pressure = String.format(PRESSFORMAT,
-                    data.getPressure());
+                    Float.valueOf(data.getPressure()));
             final JLabel pressureLabel = new JLabel(pressure,
                     SwingConstants.CENTER);
 
@@ -176,6 +177,22 @@ final public class SensorsBoxLayout implements SensorsLayout {
             labelsPanel.add(pressureLabel);
 
             labelsMap.put(PRESSURE, pressureLabel);
+        }
+
+        if (data.getVoc() > Integer.MIN_VALUE) {
+            final String voc = String.format(VOCFORMAT,
+                    Integer.valueOf(data.getVoc()));
+            final JLabel vocLabel = new JLabel(voc, SwingConstants.CENTER);
+
+            vocLabel.setName(VOC);
+            vocLabel.setOpaque(true);
+            vocLabel.setBackground(color2);
+            vocLabel.setFont(vocFont);
+            vocLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            labelsPanel.add(vocLabel);
+
+            labelsMap.put(VOC, vocLabel);
         }
 
         final JLabel timeLabel = new JLabel(data.getTimestamp(),
@@ -199,24 +216,25 @@ final public class SensorsBoxLayout implements SensorsLayout {
 
         frame.setVisible(true);
 
-        log.debug("component count: {}", mainPanel.getComponentCount());
+        log.debug("component count: {}",
+                Integer.valueOf(mainPanel.getComponentCount()));
 
         if (log.isDebugEnabled()) {
             for (final Component component : mainPanel.getComponents()) {
                 log.debug("component: {}", component.getName());
 
-//            if (component instanceof JPanel) {
-//                for (Component componentInner : ((JPanel) component).getComponents()) {
-//                    this.log.debug("componentInner: {}", componentInner.getName());
-//                }
-//            }
+                if (component instanceof JPanel) {
+                    for (final Component componentInner : ((JPanel) component)
+                            .getComponents()) {
+                        log.debug("componentInner: {}",
+                                componentInner.getName());
+                    }
+                }
             }
         }
     }
 
     private void sortPanels(final JPanel labelsPanel) {
-        // final List<Component> panelList =
-        // Arrays.asList(mainPanel.getComponents());
         final List<Component> panelList = new ArrayList<>();
 
         panelList.addAll(Arrays.asList(mainPanel.getComponents()));
@@ -255,28 +273,47 @@ final public class SensorsBoxLayout implements SensorsLayout {
                 Double.valueOf(data.getTemperature()));
         temperatureLabel.setText(temperature);
 
+        final JLabel timeLabel = labels.get(TIME);
+        timeLabel.setText(data.getTimestamp());
+
         if (Float.isFinite(data.getHumidity())) {
             final JLabel humidityLabel = labels.get(HUMIDITY);
-            final String humidity = String.format(HFORMAT,
-                    Double.valueOf(data.getHumidity()));
-            humidityLabel.setText(humidity);
+
+            if (humidityLabel != null) {
+                final String humidity = String.format(HFORMAT,
+                        Double.valueOf(data.getHumidity()));
+                humidityLabel.setText(humidity);
+            }
         }
 
         if (data.getLuminance() > Integer.MIN_VALUE) {
             final JLabel luminanceLabel = labels.get(LUMINANCE);
-            final String luminance = String.format(LUMFORMAT,
-                    Double.valueOf(data.getLuminance()));
-            luminanceLabel.setText(luminance);
+
+            if (luminanceLabel != null) {
+                final String luminance = String.format(LUMFORMAT,
+                        Integer.valueOf(data.getLuminance()));
+                luminanceLabel.setText(luminance);
+            }
         }
 
         if (Float.isFinite(data.getPressure())) {
             final JLabel pressureLabel = labels.get(PRESSURE);
-            final String pressure = String.format(PRESSFORMAT,
-                    Double.valueOf(data.getPressure()));
-            pressureLabel.setText(pressure);
+
+            if (pressureLabel != null) {
+                final String pressure = String.format(PRESSFORMAT,
+                        Double.valueOf(data.getPressure()));
+                pressureLabel.setText(pressure);
+            }
         }
 
-        final JLabel timeLabel = labels.get(TIME);
-        timeLabel.setText(data.getTimestamp());
+        if (data.getVoc() > Integer.MIN_VALUE) {
+            final JLabel vocLabel = labels.get(VOC);
+
+            if (vocLabel != null) {
+                final String voc = String.format(VOCFORMAT,
+                        Integer.valueOf(data.getVoc()));
+                vocLabel.setText(voc);
+            }
+        }
     }
 }

@@ -45,7 +45,6 @@ public class ProcessSensorData {
         propSensors = props.getSensors();
     }
 
-    @SuppressWarnings("boxing")
     public void processData(final String topic, final String data) {
         final Gson gson = new Gson();
 
@@ -61,6 +60,11 @@ public class ProcessSensorData {
 
         target.setSensorName(propSensors.get(topic_trimmed));
 
+        /*
+         * the field temperature_F is set for rs433 devices while the field
+         * temperature (Celsius) is set for zigbee devices. I'm assuming that a
+         * sensor has one of the two temperature values.
+         */
         if (Float.isFinite(target.getTemperature_F())) {
             target.setTemperature(target.getTemperature_F());
         }
@@ -88,6 +92,6 @@ public class ProcessSensorData {
             guiLayout.updateSensor(target);
         }
 
-        log.debug("length: {}", sensors.size());
+        log.debug("length: {}", Integer.valueOf(sensors.size()));
     }
 }

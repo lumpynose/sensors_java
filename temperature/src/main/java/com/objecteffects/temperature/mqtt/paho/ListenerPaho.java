@@ -27,7 +27,6 @@ public class ListenerPaho {
         this.guiLayout = _guiLayout;
     }
 
-    @SuppressWarnings("boxing")
     public void connect(final String broker) throws MqttException {
         try {
             log.debug("Connecting to MQTT broker: {}", broker);
@@ -45,7 +44,7 @@ public class ListenerPaho {
             log.debug("Connected");
         }
         catch (final MqttException me) {
-            log.debug("reason: {}", me.getReasonCode());
+            log.debug("reason: {}", Integer.valueOf(me.getReasonCode()));
             log.debug("msg: {}", me.getMessage());
             log.debug("loc: {}", me.getLocalizedMessage());
             log.debug("cause: {}", me.getCause());
