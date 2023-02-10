@@ -26,6 +26,7 @@ public class AppProperties {
                 .trimResults().split(appProps.getProperty("mqtt.topics"));
 
         final List<String> array = new ArrayList<>();
+
         for (final String e : iter) {
             array.add(e);
         }

@@ -66,11 +66,11 @@ final public class SensorsBoxLayout implements SensorsLayout {
     public void setup() {
         mainPanel = new JPanel();
 
-        final LayoutManager panelLayout = new BoxLayout(mainPanel,
-                BoxLayout.Y_AXIS);
-
         mainPanel.setBackground(color3);
         mainPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        final LayoutManager panelLayout = new BoxLayout(mainPanel,
+                BoxLayout.Y_AXIS);
 
         mainPanel.setLayout(panelLayout);
 

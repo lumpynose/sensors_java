@@ -1,14 +1,15 @@
 package com.objecteffects.temperature.main;
 
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import com.objecteffects.temperature.gui.SensorsBoxLayout;
 import com.objecteffects.temperature.gui.SensorsLayout;
+import com.objecteffects.temperature.gui.SensorsNullLayout;
 import com.objecteffects.temperature.mqtt.paho.ListenerPaho;
 
 public class MainPaho {
@@ -61,16 +62,23 @@ public class MainPaho {
     }
 
     public static void main(final String[] args) {
-        final Injector injector = Guice.createInjector(new GuiceModule());
-        final SensorsLayout guiLayout = injector
-                .getInstance(SensorsLayout.class);
+        // final Injector injector = Guice.createInjector(new GuiceModule());
+        final SensorsLayout guiLayout;
 
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                guiLayout.setup();
-            }
-        });
+        if (!GraphicsEnvironment.isHeadless()) {
+            // guiLayout = injector.getInstance(SensorsLayout.class);
+            guiLayout = new SensorsBoxLayout();
+
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    guiLayout.setup();
+                }
+            });
+        }
+        else {
+            guiLayout = new SensorsNullLayout();
+        }
 
         startListener(guiLayout);
     }
