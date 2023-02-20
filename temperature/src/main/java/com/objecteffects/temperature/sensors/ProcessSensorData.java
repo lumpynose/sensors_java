@@ -13,7 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
-import com.google.inject.Inject;
 import com.objecteffects.temperature.gui.SensorsLayout;
 import com.objecteffects.temperature.main.AppProperties;
 
@@ -27,8 +26,8 @@ public class ProcessSensorData {
     private static AppProperties props;
     private static Map<String, String> propSensors = null;
     private static SensorsLayout guiLayout;
+    private static TUnit tunit;
 
-    @Inject
     public ProcessSensorData(final SensorsLayout _guiLayout) {
         guiLayout = _guiLayout;
         props = new AppProperties();
@@ -43,6 +42,8 @@ public class ProcessSensorData {
         }
 
         propSensors = props.getSensors();
+
+        tunit = props.getTUnit();
     }
 
     public void processData(final String topic, final String data) {
@@ -60,20 +61,8 @@ public class ProcessSensorData {
 
         target.setSensorName(propSensors.get(topic_trimmed));
 
-        /*
-         * the field temperature_F is set for rs433 devices while the field
-         * temperature (Celsius) is set for zigbee devices. I'm assuming that a
-         * sensor has one of the two temperature values.
-         */
-        if (Float.isFinite(target.getTemperature_F())) {
-            target.setTemperature(target.getTemperature_F());
-        }
-        else {
-            // (0°C × 9/5) + 32 = 32°F
-            final float fahr = (float) (target.getTemperature() * (9.0 / 5.0)
-                    + 32.0);
-            target.setTemperature(fahr);
-        }
+        target.setTemperatureShow((float) tunit.convert(target));
+        target.setTemperatureLetter(tunit.toString());
 
         final LocalDateTime dateTime = LocalDateTime.now();
 

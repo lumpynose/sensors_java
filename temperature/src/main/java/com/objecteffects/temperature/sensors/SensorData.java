@@ -6,6 +6,8 @@ public class SensorData {
     private String sensorName = "";
     private float temperature_F = Float.NaN;
     private float temperature = Float.NaN;
+    private float temperatureShow;
+    private String temperatureLetter;
     private float humidity = Float.NaN;
     private int battery_ok = 0;
     private String timestamp;
@@ -67,6 +69,22 @@ public class SensorData {
 
     public void setTemperature(final float _temperature) {
         this.temperature = _temperature;
+    }
+
+    public float getTemperatureShow() {
+        return this.temperatureShow;
+    }
+
+    public void setTemperatureShow(final float _temperatureShow) {
+        this.temperatureShow = _temperatureShow;
+    }
+
+    public String getTemperatureLetter() {
+        return this.temperatureLetter;
+    }
+
+    public void setTemperatureLetter(final String _temperatureLetter) {
+        this.temperatureLetter = _temperatureLetter;
     }
 
     public float getHumidity() {

@@ -4,15 +4,24 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import com.google.common.base.Splitter;
+import com.objecteffects.temperature.sensors.TUnit;
 
 public class AppProperties {
     private final static Properties appProps = new Properties();
     private final static String PROPERTIES = "mqtt.properties";
+    private final Map<String, TUnit> tunits = new HashMap<>();
+
+    public AppProperties() {
+        for (final TUnit tunit : TUnit.values()) {
+            this.tunits.put(tunit.toString(), tunit);
+        }
+    }
 
     public void loadProperties() throws FileNotFoundException, IOException {
         try (InputStream root = new AppProperties().getClass().getClassLoader()
@@ -46,5 +55,21 @@ public class AppProperties {
                 .split(appProps.getProperty("mqtt.sensors"));
 
         return splitKeyValues;
+    }
+
+    public TUnit getTUnit() {
+        final String tunitProp = appProps.getProperty("mqtt.tunit");
+
+        if (tunitProp == null) {
+            return TUnit.Fahrenheit;
+        }
+
+        final TUnit tunit = this.tunits.get(tunitProp);
+
+        if (tunit == null) {
+            return TUnit.Fahrenheit;
+        }
+
+        return tunit;
     }
 }

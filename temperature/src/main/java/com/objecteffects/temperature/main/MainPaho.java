@@ -39,7 +39,7 @@ public class MainPaho {
             throw new RuntimeException(e);
         }
 
-        log.debug("properties: {}", props.getSensors());
+        log.debug("sensors: {}", props.getSensors());
 
         final ListenerPaho listener = new ListenerPaho(guiLayout);
 

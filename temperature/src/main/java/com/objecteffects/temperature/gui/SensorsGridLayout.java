@@ -26,7 +26,8 @@ import org.apache.logging.log4j.Logger;
 import com.objecteffects.temperature.sensors.SensorData;
 
 final public class SensorsGridLayout implements SensorsLayout {
-    private final static Logger log = LogManager.getLogger(SensorsGridLayout.class);
+    private final static Logger log = LogManager
+            .getLogger(SensorsGridLayout.class);
 
     private static final String NAME = "name";
     private final static String TEMPERATURE = "temperature";
@@ -43,7 +44,8 @@ final public class SensorsGridLayout implements SensorsLayout {
     private final static Color color3 = new Color(189, 183, 107);
 
     private final static Font nameFont = new Font("Arial Bold", Font.BOLD, 24);
-    private final static Font temperatureFont = new Font("Arial Bold", Font.BOLD, 20);
+    private final static Font temperatureFont = new Font("Arial Bold",
+            Font.BOLD, 20);
     private final static Font humidityFont = new Font("Arial", Font.PLAIN, 18);
     private final static Font timeFont = new Font("Arial", Font.PLAIN, 12);
 
@@ -90,7 +92,9 @@ final public class SensorsGridLayout implements SensorsLayout {
         log.debug("label: {}", data.getSensorName());
 
         // funky spaces added to the name to make it not so tight.
-        final JLabel nameLabel = new JLabel(String.format(NFORMAT, data.getSensorName()), SwingConstants.CENTER);
+        final JLabel nameLabel = new JLabel(
+                String.format(NFORMAT, data.getSensorName()),
+                SwingConstants.CENTER);
         // final JLabel nameLabel = new JLabel(data.getSensorName(),
         // SwingConstants.CENTER);
 
@@ -101,8 +105,10 @@ final public class SensorsGridLayout implements SensorsLayout {
         labelsPanel.add(nameLabel);
         // label1.setBorder(BorderFactory.createLineBorder(color1, 1));
 
-        final String temperature = String.format(TFORMAT, Double.valueOf(data.getTemperature()));
-        final JLabel temperatureLabel = new JLabel(temperature, SwingConstants.CENTER);
+        final String temperature = String.format(TFORMAT,
+                Double.valueOf(data.getTemperatureShow()));
+        final JLabel temperatureLabel = new JLabel(temperature,
+                SwingConstants.CENTER);
 
         temperatureLabel.setName(TEMPERATURE);
         temperatureLabel.setOpaque(true);
@@ -115,21 +121,25 @@ final public class SensorsGridLayout implements SensorsLayout {
         labelsMap.put(TEMPERATURE, temperatureLabel);
 
         if (Float.isFinite(data.getHumidity())) {
-            final String humidity = String.format(HFORMAT, Double.valueOf(data.getHumidity()));
-            final JLabel humidityLabel = new JLabel(humidity, SwingConstants.CENTER);
+            final String humidity = String.format(HFORMAT,
+                    Double.valueOf(data.getHumidity()));
+            final JLabel humidityLabel = new JLabel(humidity,
+                    SwingConstants.CENTER);
 
             humidityLabel.setName(HUMIDITY);
             humidityLabel.setOpaque(true);
             humidityLabel.setBackground(color2);
             humidityLabel.setFont(humidityFont);
-            // humidityLabel.setBorder(BorderFactory.createLineBorder(color1, 1));
+            // humidityLabel.setBorder(BorderFactory.createLineBorder(color1,
+            // 1));
 
             labelsPanel.add(humidityLabel);
 
             labelsMap.put(HUMIDITY, humidityLabel);
         }
 
-        final JLabel timeLabel = new JLabel(data.getTimestamp(), SwingConstants.CENTER);
+        final JLabel timeLabel = new JLabel(data.getTimestamp(),
+                SwingConstants.CENTER);
 
         timeLabel.setName(TIME);
         timeLabel.setOpaque(true);
@@ -167,7 +177,8 @@ final public class SensorsGridLayout implements SensorsLayout {
     }
 
     private void sortPanels(final JPanel labelsPanel) {
-        // final List<Component> panelList = Arrays.asList(mainPanel.getComponents());
+        // final List<Component> panelList =
+        // Arrays.asList(mainPanel.getComponents());
         final List<Component> panelList = new ArrayList<>();
 
         panelList.addAll(Arrays.asList(mainPanel.getComponents()));
@@ -176,7 +187,8 @@ final public class SensorsGridLayout implements SensorsLayout {
         Collections.sort(panelList, new Comparator<Component>() {
             @Override
             public int compare(final Component c1, final Component c2) {
-                return ((JPanel) c1).getName().compareTo(((JPanel) c2).getName());
+                return ((JPanel) c1).getName()
+                        .compareTo(((JPanel) c2).getName());
             }
         });
 
@@ -201,7 +213,8 @@ final public class SensorsGridLayout implements SensorsLayout {
         final Map<String, JLabel> labels = panelsMap.get(data.getSensorName());
 
         final JLabel label2 = labels.get(TEMPERATURE);
-        final String temperature = String.format(TFORMAT, Double.valueOf(data.getTemperature()));
+        final String temperature = String.format(TFORMAT,
+                Double.valueOf(data.getTemperatureShow()));
         label2.setText(temperature.toString());
 
         final JLabel label3 = labels.get(TIME);

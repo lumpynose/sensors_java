@@ -37,7 +37,7 @@ final public class SensorsBoxLayout implements SensorsLayout {
     private final static String PRESSURE = "pressure";
     private final static String VOC = "pressure";
     private final static String NFORMAT = " %s ";
-    private final static String TFORMAT = "%3.0f\u00B0 F";
+    private final static String TFORMAT = "%3.0f\u00B0 %s";
     private final static String HFORMAT = "%3.0f%%";
     private final static String LUMFORMAT = "%d lux";
     private final static String PRESSFORMAT = "%3.0f mb";
@@ -114,7 +114,8 @@ final public class SensorsBoxLayout implements SensorsLayout {
         labelsPanel.add(nameLabel);
 
         final String temperature = String.format(TFORMAT,
-                Double.valueOf(data.getTemperature()));
+                Double.valueOf(data.getTemperatureShow()),
+                data.getTemperatureLetter());
         final JLabel temperatureLabel = new JLabel(temperature,
                 SwingConstants.CENTER);
 
@@ -270,7 +271,7 @@ final public class SensorsBoxLayout implements SensorsLayout {
 
         final JLabel temperatureLabel = labels.get(TEMPERATURE);
         final String temperature = String.format(TFORMAT,
-                Double.valueOf(data.getTemperature()));
+                Double.valueOf(data.getTemperatureShow()));
         temperatureLabel.setText(temperature);
 
         final JLabel timeLabel = labels.get(TIME);
