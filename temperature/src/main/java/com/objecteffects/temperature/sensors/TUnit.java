@@ -1,5 +1,9 @@
 package com.objecteffects.temperature.sensors;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /*
  * the field temperature_F is set for rs433 devices while the field
  * temperature (Celsius) is set for zigbee devices. I'm assuming that a
@@ -62,6 +66,8 @@ public enum TUnit {
 
     private final String letter;
 
+    private static final Map<String, TUnit> ENUM_MAP;
+
     TUnit(final String _letter) {
         this.letter = _letter;
     }
@@ -69,6 +75,22 @@ public enum TUnit {
     @Override
     public String toString() {
         return this.letter;
+    }
+
+    static {
+        final Map<String, TUnit> map = new HashMap<>();
+
+        for (final TUnit tunit : TUnit.values()) {
+            map.put(tunit.toString().toLowerCase(), tunit);
+        }
+
+        ENUM_MAP = Collections.unmodifiableMap(map);
+
+        // Stream.of(TUnit.values()).collect(toMap(Enum::name, identity()));
+    }
+
+    public static TUnit get(final String name) {
+        return ENUM_MAP.get(name.toLowerCase());
     }
 
     public abstract double convert(final SensorData sensor);

@@ -17,12 +17,6 @@ public class AppProperties {
     private final static String PROPERTIES = "mqtt.properties";
     private final Map<String, TUnit> tunits = new HashMap<>();
 
-    public AppProperties() {
-        for (final TUnit tunit : TUnit.values()) {
-            this.tunits.put(tunit.toString(), tunit);
-        }
-    }
-
     public void loadProperties() throws FileNotFoundException, IOException {
         try (InputStream root = new AppProperties().getClass().getClassLoader()
                 .getResourceAsStream(PROPERTIES)) {
@@ -64,7 +58,7 @@ public class AppProperties {
             return TUnit.Fahrenheit;
         }
 
-        final TUnit tunit = this.tunits.get(tunitProp);
+        final TUnit tunit = TUnit.get(tunitProp);
 
         if (tunit == null) {
             return TUnit.Fahrenheit;
