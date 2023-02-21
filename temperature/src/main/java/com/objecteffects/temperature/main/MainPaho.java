@@ -62,11 +62,9 @@ public class MainPaho {
     }
 
     public static void main(final String[] args) {
-        // final Injector injector = Guice.createInjector(new GuiceModule());
         final SensorsLayout guiLayout;
 
         if (!GraphicsEnvironment.isHeadless()) {
-            // guiLayout = injector.getInstance(SensorsLayout.class);
             guiLayout = new SensorsBoxLayout();
 
             javax.swing.SwingUtilities.invokeLater(new Runnable() {

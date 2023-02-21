@@ -2,8 +2,8 @@ package com.objecteffects.temperature.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -35,7 +37,7 @@ final public class SensorsBoxLayout implements SensorsLayout {
     private final static String TIME = "time";
     private final static String LUMINANCE = "luminance";
     private final static String PRESSURE = "pressure";
-    private final static String VOC = "pressure";
+    private final static String VOC = "voc";
     private final static String NFORMAT = " %s ";
     private final static String TFORMAT = "%3.0f\u00B0 %s";
     private final static String HFORMAT = "%3.0f%%";
@@ -43,11 +45,11 @@ final public class SensorsBoxLayout implements SensorsLayout {
     private final static String PRESSFORMAT = "%3.0f mb";
     private final static String VOCFORMAT = "%d voc";
 
-    private final static JFrame frame = new JFrame("temperatures");
+    private final static int VSPACE = 4;
 
-    private final static Color color1 = new Color(128, 128, 0);
-    private final static Color color2 = new Color(143, 188, 143);
-    private final static Color color3 = new Color(189, 183, 107);
+    private final static Color nameColor = new Color(128, 128, 0);
+    private final static Color borderColor = nameColor.darker();
+    private final static Color valuesColor = new Color(143, 188, 143);
 
     private final static Font nameFont = new Font("Arial Bold", Font.BOLD, 24);
     private final static Font temperatureFont = new Font("Arial Bold",
@@ -60,27 +62,22 @@ final public class SensorsBoxLayout implements SensorsLayout {
 
     private final static Map<String, Map<String, JLabel>> panelsMap = new HashMap<>();
 
-    private static JPanel mainPanel;
+    private final static JFrame frame = new JFrame("temperatures");
+    private final static JPanel mainPanel = new JPanel();
 
     @Override
     public void setup() {
-        mainPanel = new JPanel();
-
-        mainPanel.setBackground(color3);
-        mainPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        final LayoutManager panelLayout = new BoxLayout(mainPanel,
+        // BoxLayout for the mainPanel,
+        // GridLayout for the sensorPanels
+        final LayoutManager boxLayout = new BoxLayout(mainPanel,
                 BoxLayout.Y_AXIS);
-
-        mainPanel.setLayout(panelLayout);
+        mainPanel.setLayout(boxLayout);
 
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setContentPane(mainPanel);
 
-        frame.getContentPane().add(mainPanel);
-
-        frame.pack();
-
-        frame.setVisible(true);
+        mainPanel.setBackground(valuesColor);
+        mainPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
     }
 
     @Override
@@ -89,129 +86,160 @@ final public class SensorsBoxLayout implements SensorsLayout {
 
         panelsMap.put(data.getSensorName(), labelsMap);
 
-        final LayoutManager panelLayout = new GridLayout(0, 1);
+        final JPanel sensorPanel = new JPanel();
+        final LayoutManager boxLayout = new BoxLayout(sensorPanel,
+                BoxLayout.Y_AXIS);
+        sensorPanel.setLayout(boxLayout);
 
-        final JPanel labelsPanel = new JPanel(panelLayout);
-
-        labelsPanel.setName(data.getSensorName());
-        labelsPanel.setLayout(panelLayout);
-        labelsPanel.setBackground(color2);
-        labelsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        sensorPanel.setName(data.getSensorName());
+        sensorPanel.setOpaque(true);
+        sensorPanel.setBackground(valuesColor);
+        sensorPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         log.debug("label: {}", data.getSensorName());
 
-        // funky spaces added to the name to make it not so tight.
-        final JLabel nameLabel = new JLabel(
-                String.format(NFORMAT, data.getSensorName()),
-                SwingConstants.CENTER);
+        final JLabel nameLabel = new JLabel();
+
+        nameLabel.setText(String.format(NFORMAT, data.getSensorName()));
+        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         nameLabel.setName(NAME);
         nameLabel.setOpaque(true);
-        nameLabel.setBackground(color1);
+        nameLabel.setBackground(nameColor);
         nameLabel.setFont(nameFont);
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        nameLabel.setLabelFor(sensorPanel);
+        nameLabel.setMaximumSize(
+                new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+        nameLabel.setBorder(BorderFactory.createLineBorder(borderColor));
 
-        labelsPanel.add(nameLabel);
+        sensorPanel.add(nameLabel);
+        sensorPanel.add(Box.createRigidArea(new Dimension(0, VSPACE)));
 
-        final String temperature = String.format(TFORMAT,
+        final JPanel valuesPanel = new JPanel();
+
+        final LayoutManager boxLayoutV = new BoxLayout(valuesPanel,
+                BoxLayout.Y_AXIS);
+        valuesPanel.setLayout(boxLayoutV);
+
+        valuesPanel.setName(data.getSensorName());
+        valuesPanel.setOpaque(false);
+        valuesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        sensorPanel.add(valuesPanel);
+
+        final JLabel temperatureLabel = new JLabel();
+
+        temperatureLabel.setText(String.format(TFORMAT,
                 Double.valueOf(data.getTemperatureShow()),
-                data.getTemperatureLetter());
-        final JLabel temperatureLabel = new JLabel(temperature,
-                SwingConstants.CENTER);
+                data.getTemperatureLetter()));
+        temperatureLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         temperatureLabel.setName(TEMPERATURE);
-        temperatureLabel.setOpaque(true);
-        temperatureLabel.setBackground(color2);
+        temperatureLabel.setOpaque(false);
         temperatureLabel.setFont(temperatureFont);
         temperatureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        labelsPanel.add(temperatureLabel);
+        valuesPanel.add(temperatureLabel);
+        valuesPanel.add(Box.createRigidArea(new Dimension(0, VSPACE)));
 
         labelsMap.put(TEMPERATURE, temperatureLabel);
 
         if (Float.isFinite(data.getHumidity())) {
-            final String humidity = String.format(HFORMAT,
-                    Double.valueOf(data.getHumidity()));
-            final JLabel humidityLabel = new JLabel(humidity,
-                    SwingConstants.CENTER);
+            final JLabel humidityLabel = new JLabel();
+
+            humidityLabel.setText(
+                    String.format(HFORMAT, Double.valueOf(data.getHumidity())));
+            humidityLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
             humidityLabel.setName(HUMIDITY);
-            humidityLabel.setOpaque(true);
-            humidityLabel.setBackground(color2);
+            humidityLabel.setOpaque(false);
             humidityLabel.setFont(humidityFont);
             humidityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            labelsPanel.add(humidityLabel);
+            valuesPanel.add(humidityLabel);
+            valuesPanel.add(Box.createRigidArea(new Dimension(0, VSPACE)));
 
             labelsMap.put(HUMIDITY, humidityLabel);
         }
 
         if (data.getLuminance() > Integer.MIN_VALUE) {
-            final String luminance = String.format(LUMFORMAT,
-                    Integer.valueOf(data.getLuminance()));
-            final JLabel luminanceLabel = new JLabel(luminance,
-                    SwingConstants.CENTER);
+            final JLabel luminanceLabel = new JLabel();
+
+            luminanceLabel.setText(String.format(LUMFORMAT,
+                    Integer.valueOf(data.getLuminance())));
+            luminanceLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
             luminanceLabel.setName(LUMINANCE);
-            luminanceLabel.setOpaque(true);
-            luminanceLabel.setBackground(color2);
+            luminanceLabel.setOpaque(false);
             luminanceLabel.setFont(luminanceFont);
             luminanceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            labelsPanel.add(luminanceLabel);
+            valuesPanel.add(luminanceLabel);
+            valuesPanel.add(Box.createRigidArea(new Dimension(0, VSPACE)));
 
             labelsMap.put(LUMINANCE, luminanceLabel);
         }
 
         if (Float.isFinite(data.getPressure())) {
-            final String pressure = String.format(PRESSFORMAT,
-                    Float.valueOf(data.getPressure()));
-            final JLabel pressureLabel = new JLabel(pressure,
-                    SwingConstants.CENTER);
+            final JLabel pressureLabel = new JLabel();
+
+            pressureLabel.setText(String.format(PRESSFORMAT,
+                    Float.valueOf(data.getPressure())));
+            pressureLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
             pressureLabel.setName(PRESSURE);
-            pressureLabel.setOpaque(true);
-            pressureLabel.setBackground(color2);
+            pressureLabel.setOpaque(false);
             pressureLabel.setFont(pressureFont);
             pressureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            labelsPanel.add(pressureLabel);
+            valuesPanel.add(pressureLabel);
+            valuesPanel.add(Box.createRigidArea(new Dimension(0, VSPACE)));
 
             labelsMap.put(PRESSURE, pressureLabel);
         }
 
         if (data.getVoc() > Integer.MIN_VALUE) {
-            final String voc = String.format(VOCFORMAT,
-                    Integer.valueOf(data.getVoc()));
-            final JLabel vocLabel = new JLabel(voc, SwingConstants.CENTER);
+            final JLabel vocLabel = new JLabel();
+
+            vocLabel.setText(
+                    String.format(VOCFORMAT, Integer.valueOf(data.getVoc())));
+            vocLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
             vocLabel.setName(VOC);
-            vocLabel.setOpaque(true);
-            vocLabel.setBackground(color2);
+            vocLabel.setOpaque(false);
             vocLabel.setFont(vocFont);
             vocLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            labelsPanel.add(vocLabel);
+            valuesPanel.add(vocLabel);
+            valuesPanel.add(Box.createRigidArea(new Dimension(0, VSPACE)));
 
             labelsMap.put(VOC, vocLabel);
         }
 
-        final JLabel timeLabel = new JLabel(data.getTimestamp(),
-                SwingConstants.CENTER);
+        final JLabel timeLabel = new JLabel();
+
+        timeLabel.setText(data.getTimestamp());
+        timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         timeLabel.setName(TIME);
-        timeLabel.setOpaque(true);
-        timeLabel.setBackground(color2);
+        timeLabel.setOpaque(false);
         timeLabel.setFont(timeFont);
         timeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        labelsPanel.add(timeLabel);
+        valuesPanel.add(timeLabel);
+        valuesPanel.add(Box.createRigidArea(new Dimension(0, VSPACE)));
 
         labelsMap.put(TIME, timeLabel);
 
-        labelsPanel.validate();
+        valuesPanel.updateUI();
+        valuesPanel.validate();
 
-        sortPanels(labelsPanel);
+        sensorPanel.updateUI();
+        sensorPanel.validate();
+
+        // sortPanels adds the sensorPanel to the mainPanel
+        sortPanels(sensorPanel);
 
         frame.pack();
 
@@ -235,11 +263,11 @@ final public class SensorsBoxLayout implements SensorsLayout {
         }
     }
 
-    private void sortPanels(final JPanel labelsPanel) {
+    private void sortPanels(final JPanel sensorPanel) {
         final List<Component> panelList = new ArrayList<>();
 
         panelList.addAll(Arrays.asList(mainPanel.getComponents()));
-        panelList.add(labelsPanel);
+        panelList.add(sensorPanel);
 
         Collections.sort(panelList, new Comparator<Component>() {
             @Override
@@ -273,9 +301,6 @@ final public class SensorsBoxLayout implements SensorsLayout {
         final String temperature = String.format(TFORMAT,
                 Double.valueOf(data.getTemperatureShow()));
         temperatureLabel.setText(temperature);
-
-        final JLabel timeLabel = labels.get(TIME);
-        timeLabel.setText(data.getTimestamp());
 
         if (Float.isFinite(data.getHumidity())) {
             final JLabel humidityLabel = labels.get(HUMIDITY);
@@ -316,5 +341,8 @@ final public class SensorsBoxLayout implements SensorsLayout {
                 vocLabel.setText(voc);
             }
         }
+
+        final JLabel timeLabel = labels.get(TIME);
+        timeLabel.setText(data.getTimestamp());
     }
 }
