@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.LayoutManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,6 +18,7 @@ import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,9 +30,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.objecteffects.temperature.sensors.SensorData;
 
-final public class SensorsBoxLayout implements SensorsLayout {
+final public class Sensors implements ISensors {
     private final static Logger log = LogManager
-            .getLogger(SensorsBoxLayout.class);
+            .getLogger(Sensors.class);
 
     private static final String NAME = "name";
     private final static String TEMPERATURE = "temperature";
@@ -78,6 +81,9 @@ final public class SensorsBoxLayout implements SensorsLayout {
 
         mainPanel.setBackground(valuesColor);
         mainPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+//        mainPanel.setMinimumSize(new Dimension(0, 0));
+//        mainPanel.setMaximumSize(
+//                new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
     }
 
     @Override
@@ -96,37 +102,47 @@ final public class SensorsBoxLayout implements SensorsLayout {
         sensorPanel.setBackground(valuesColor);
         sensorPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        log.debug("label: {}", data.getSensorName());
+        log.debug("sensor name: {}", data.getSensorName());
 
-        final JLabel nameLabel = new JLabel();
+        // final JLabel nameLabel = new JLabel();
+        final JButton nameButton = new JButton();
 
-        nameLabel.setText(String.format(NFORMAT, data.getSensorName()));
-        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        nameButton.setBorderPainted(false);
+        nameButton.setFocusPainted(false);
 
-        nameLabel.setName(NAME);
-        nameLabel.setOpaque(true);
-        nameLabel.setBackground(nameColor);
-        nameLabel.setFont(nameFont);
-        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        nameLabel.setLabelFor(sensorPanel);
-        nameLabel.setMaximumSize(
+        nameButton.setText(String.format(NFORMAT, data.getSensorName()));
+        nameButton.setHorizontalAlignment(SwingConstants.CENTER);
+
+        nameButton.setName(NAME);
+        nameButton.setOpaque(true);
+        nameButton.setBackground(nameColor);
+        nameButton.setFont(nameFont);
+        nameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        nameButton.setMaximumSize(
                 new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-        nameLabel.setBorder(BorderFactory.createLineBorder(borderColor));
+        nameButton.setBorder(BorderFactory.createLineBorder(borderColor));
 
-        sensorPanel.add(nameLabel);
+        sensorPanel.add(nameButton);
         sensorPanel.add(Box.createRigidArea(new Dimension(0, VSPACE)));
 
         final JPanel valuesPanel = new JPanel();
 
-        final LayoutManager boxLayoutV = new BoxLayout(valuesPanel,
+        final LayoutManager boxLayoutVP = new BoxLayout(valuesPanel,
                 BoxLayout.Y_AXIS);
-        valuesPanel.setLayout(boxLayoutV);
+        valuesPanel.setLayout(boxLayoutVP);
 
         valuesPanel.setName(data.getSensorName());
         valuesPanel.setOpaque(false);
         valuesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         sensorPanel.add(valuesPanel);
+
+        nameButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                nameButtonPressed(valuesPanel);
+            }
+        });
 
         final JLabel temperatureLabel = new JLabel();
 
@@ -344,5 +360,13 @@ final public class SensorsBoxLayout implements SensorsLayout {
 
         final JLabel timeLabel = labels.get(TIME);
         timeLabel.setText(data.getTimestamp());
+    }
+
+    private void nameButtonPressed(final JPanel valuesPanel) {
+        log.debug("button pressed");
+
+        valuesPanel.setVisible(!valuesPanel.isVisible());
+
+        frame.pack();
     }
 }

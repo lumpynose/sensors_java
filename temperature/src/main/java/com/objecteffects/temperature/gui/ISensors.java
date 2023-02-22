@@ -2,7 +2,7 @@ package com.objecteffects.temperature.gui;
 
 import com.objecteffects.temperature.sensors.SensorData;
 
-public interface SensorsLayout {
+public interface ISensors {
     void setup();
 
     void addSensor(SensorData target);

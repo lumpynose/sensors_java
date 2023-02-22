@@ -11,7 +11,7 @@ import org.eclipse.paho.mqttv5.client.persist.MemoryPersistence;
 import org.eclipse.paho.mqttv5.common.MqttException;
 import org.eclipse.paho.mqttv5.common.MqttSubscription;
 
-import com.objecteffects.temperature.gui.SensorsLayout;
+import com.objecteffects.temperature.gui.ISensors;
 
 public class ListenerPaho {
     private final static Logger log = LogManager.getLogger(ListenerPaho.class);
@@ -21,9 +21,9 @@ public class ListenerPaho {
     private static MqttClient client;
 
     private static final MemoryPersistence persistence = new MemoryPersistence();
-    private final SensorsLayout guiLayout;
+    private final ISensors guiLayout;
 
-    public ListenerPaho(final SensorsLayout _guiLayout) {
+    public ListenerPaho(final ISensors _guiLayout) {
         this.guiLayout = _guiLayout;
     }
 

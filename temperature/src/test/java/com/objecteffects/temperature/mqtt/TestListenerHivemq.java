@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-import com.objecteffects.temperature.gui.SensorsBoxLayout;
+import com.objecteffects.temperature.gui.Sensors;
 import com.objecteffects.temperature.main.AppProperties;
 import com.objecteffects.temperature.mqtt.hivemq.ListenerHivemq;
 
@@ -32,7 +32,7 @@ public class TestListenerHivemq {
         }
 
         final ListenerHivemq listener = new ListenerHivemq(
-                new SensorsBoxLayout());
+                new Sensors());
 
         listener.connect(props.getBrokerAddress());
 

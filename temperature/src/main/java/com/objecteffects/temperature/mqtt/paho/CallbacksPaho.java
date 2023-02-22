@@ -12,7 +12,7 @@ import org.eclipse.paho.mqttv5.common.MqttException;
 import org.eclipse.paho.mqttv5.common.MqttMessage;
 import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
 
-import com.objecteffects.temperature.gui.SensorsLayout;
+import com.objecteffects.temperature.gui.ISensors;
 import com.objecteffects.temperature.main.AppProperties;
 import com.objecteffects.temperature.sensors.ProcessSensorData;
 
@@ -21,10 +21,10 @@ public class CallbacksPaho implements MqttCallback {
 
     private final MqttClient client;
     private final ProcessSensorData process;
-    private final SensorsLayout guiLayout;
+    private final ISensors guiLayout;
 
     public CallbacksPaho(final MqttClient _client,
-            final SensorsLayout _guiLayout) {
+            final ISensors _guiLayout) {
         this.client = _client;
         this.guiLayout = _guiLayout;
         this.process = new ProcessSensorData(_guiLayout);

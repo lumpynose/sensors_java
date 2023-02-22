@@ -2,7 +2,7 @@ package com.objecteffects.temperature.gui;
 
 import com.objecteffects.temperature.sensors.SensorData;
 
-public class SensorsNullLayout implements SensorsLayout {
+public class SensorsNull implements ISensors {
     @Override
     public void setup() {
         return;

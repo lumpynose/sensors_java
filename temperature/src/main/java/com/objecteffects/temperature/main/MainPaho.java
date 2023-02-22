@@ -2,14 +2,15 @@ package com.objecteffects.temperature.main;
 
 import java.awt.GraphicsEnvironment;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.objecteffects.temperature.gui.SensorsBoxLayout;
-import com.objecteffects.temperature.gui.SensorsLayout;
-import com.objecteffects.temperature.gui.SensorsNullLayout;
+import com.objecteffects.temperature.gui.Sensors;
+import com.objecteffects.temperature.gui.ISensors;
+import com.objecteffects.temperature.gui.SensorsNull;
 import com.objecteffects.temperature.mqtt.paho.ListenerPaho;
 
 public class MainPaho {
@@ -27,7 +28,7 @@ public class MainPaho {
     private final static Logger log = LogManager.getLogger(MainPaho.class);
     private final static AppProperties props = new AppProperties();
 
-    private static void startListener(final SensorsLayout guiLayout) {
+    private static void startMqttListener(final ISensors guiLayout) {
         try {
             props.loadProperties();
         }
@@ -61,13 +62,15 @@ public class MainPaho {
         log.debug("listener started");
     }
 
-    public static void main(final String[] args) {
-        final SensorsLayout guiLayout;
+    public static void main(final String[] args)
+            throws InvocationTargetException, InterruptedException {
+        final ISensors guiLayout;
 
         if (!GraphicsEnvironment.isHeadless()) {
-            guiLayout = new SensorsBoxLayout();
+            guiLayout = new Sensors();
 
-            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+//            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
                 @Override
                 public void run() {
                     guiLayout.setup();
@@ -75,9 +78,9 @@ public class MainPaho {
             });
         }
         else {
-            guiLayout = new SensorsNullLayout();
+            guiLayout = new SensorsNull();
         }
 
-        startListener(guiLayout);
+        startMqttListener(guiLayout);
     }
 }

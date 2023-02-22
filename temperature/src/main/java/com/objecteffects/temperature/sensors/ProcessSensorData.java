@@ -13,7 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
-import com.objecteffects.temperature.gui.SensorsLayout;
+import com.objecteffects.temperature.gui.ISensors;
 import com.objecteffects.temperature.main.AppProperties;
 
 public class ProcessSensorData {
@@ -25,10 +25,10 @@ public class ProcessSensorData {
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
     private static AppProperties props;
     private static Map<String, String> propSensors = null;
-    private static SensorsLayout guiLayout;
+    private static ISensors guiLayout;
     private static TUnit tunit;
 
-    public ProcessSensorData(final SensorsLayout _guiLayout) {
+    public ProcessSensorData(final ISensors _guiLayout) {
         guiLayout = _guiLayout;
         props = new AppProperties();
 

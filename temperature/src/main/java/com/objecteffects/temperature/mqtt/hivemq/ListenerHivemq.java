@@ -8,7 +8,7 @@ import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
-import com.objecteffects.temperature.gui.SensorsLayout;
+import com.objecteffects.temperature.gui.ISensors;
 import com.objecteffects.temperature.mqtt.paho.ListenerPaho;
 
 public class ListenerHivemq {
@@ -20,7 +20,7 @@ public class ListenerHivemq {
     private static Mqtt5BlockingClient client;
 
     @SuppressWarnings("unused")
-    public ListenerHivemq(final SensorsLayout _guiLayout) {
+    public ListenerHivemq(final ISensors _guiLayout) {
         // empty
     }
 
