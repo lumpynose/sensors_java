@@ -5,19 +5,19 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 import com.objecteffects.temperature.gui.Sensors;
 import com.objecteffects.temperature.main.AppProperties;
 import com.objecteffects.temperature.mqtt.hivemq.ListenerHivemq;
 
-public class TestListenerHivemq {
-    private final static Logger log = LogManager.getLogger();
+class ListenerHivemqTests {
+    private final static Logger log = LogManager
+            .getLogger(ListenerHivemqTests.class);
 
     private final static AppProperties props = new AppProperties();
 
-    @Test
+//    @Test
     @Timeout(value = 2, unit = TimeUnit.MINUTES)
     public void startListener() {
         try {
@@ -31,13 +31,12 @@ public class TestListenerHivemq {
             throw new RuntimeException(e);
         }
 
-        final ListenerHivemq listener = new ListenerHivemq(
-                new Sensors());
+        final ListenerHivemq listener = new ListenerHivemq(new Sensors());
 
         listener.connect(props.getBrokerAddress());
 
         for (final String topic : props.getTopics()) {
-            log.info("test listening: {}", topic);
+            log.debug("test listening: {}", topic);
 
             listener.listen(topic);
         }

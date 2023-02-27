@@ -79,9 +79,12 @@ final public class Sensors implements ISensors {
 
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setContentPane(mainPanel);
+        frame.setName("frame");
 
         mainPanel.setBackground(valuesColor);
         mainPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainPanel.setName("mainPanel");
+
 //        mainPanel.setMinimumSize(new Dimension(0, 0));
 //        mainPanel.setMaximumSize(
 //                new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
@@ -283,8 +286,9 @@ final public class Sensors implements ISensors {
                 if (component instanceof JPanel) {
                     for (final Component componentInner : ((JPanel) component)
                             .getComponents()) {
-                        log.debug("componentInner: {}",
-                                componentInner.getName());
+                        log.debug("componentInner: {}, {}",
+                                componentInner.getName(),
+                                componentInner.getClass());
                     }
                 }
             }
@@ -323,16 +327,18 @@ final public class Sensors implements ISensors {
 
         log.debug("updating: {}", data.getSensorName());
 
-        final Map<String, JComponent> labels = panelsMap
+        final Map<String, JComponent> labelsMap = panelsMap
                 .get(data.getSensorName());
 
-        final JButton temperatureLabel = (JButton) labels.get(TEMPERATURE);
+        final JButton temperatureLabel = (JButton) labelsMap.get(TEMPERATURE);
+
         final String temperature = String.format(TFORMAT,
-                Double.valueOf(data.getTemperatureShow()));
+                Double.valueOf(data.getTemperatureShow()),
+                data.getTemperatureLetter());
         temperatureLabel.setText(temperature);
 
         if (Float.isFinite(data.getHumidity())) {
-            final JLabel humidityLabel = (JLabel) labels.get(HUMIDITY);
+            final JLabel humidityLabel = (JLabel) labelsMap.get(HUMIDITY);
 
             if (humidityLabel != null) {
                 final String humidity = String.format(HFORMAT,
@@ -342,7 +348,7 @@ final public class Sensors implements ISensors {
         }
 
         if (data.getLuminance() > Integer.MIN_VALUE) {
-            final JLabel luminanceLabel = (JLabel) labels.get(LUMINANCE);
+            final JLabel luminanceLabel = (JLabel) labelsMap.get(LUMINANCE);
 
             if (luminanceLabel != null) {
                 final String luminance = String.format(LUMFORMAT,
@@ -352,7 +358,7 @@ final public class Sensors implements ISensors {
         }
 
         if (Float.isFinite(data.getPressure())) {
-            final JLabel pressureLabel = (JLabel) labels.get(PRESSURE);
+            final JLabel pressureLabel = (JLabel) labelsMap.get(PRESSURE);
 
             if (pressureLabel != null) {
                 final String pressure = String.format(PRESSFORMAT,
@@ -362,7 +368,7 @@ final public class Sensors implements ISensors {
         }
 
         if (data.getVoc() > Integer.MIN_VALUE) {
-            final JLabel vocLabel = (JLabel) labels.get(VOC);
+            final JLabel vocLabel = (JLabel) labelsMap.get(VOC);
 
             if (vocLabel != null) {
                 final String voc = String.format(VOCFORMAT,
@@ -371,8 +377,11 @@ final public class Sensors implements ISensors {
             }
         }
 
-        final JLabel timeLabel = (JLabel) labels.get(TIME);
+        final JLabel timeLabel = (JLabel) labelsMap.get(TIME);
         timeLabel.setText(data.getTimestamp());
+
+        mainPanel.updateUI();
+        mainPanel.validate();
     }
 
     private void nameButtonPressed(final JPanel valuesPanel) {

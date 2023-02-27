@@ -17,8 +17,9 @@ import com.google.gson.JsonPrimitive;
 /**
  * @author rusty
  */
-class TestHttpClient {
-    private final static Logger log = LogManager.getLogger();
+class HttpClientTests {
+    private final static Logger log = LogManager
+            .getLogger(HttpClientTests.class);
 
     private final SimpleDateFormat jdf = new SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss");
@@ -27,7 +28,6 @@ class TestHttpClient {
     void testUp() throws IOException, InterruptedException {
         final HttpClientPrometheus client = new HttpClientPrometheus();
 
-//        final String upQuery = "query?query=up&time=2023-02-24T11:40:05-08:00";
         final String upQuery2 = "query?query=up";
 
         final HttpResponse<String> response = client.sendAndReceive(upQuery2);

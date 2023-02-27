@@ -107,8 +107,12 @@ public class SensorData {
     public String toString() {
         return "SensorData [sensorName=" + this.sensorName + ", temperature_F="
                 + this.temperature_F + ", temperature=" + this.temperature
+                + ", temperatureShow=" + this.temperatureShow
+                + ", temperatureLetter=" + this.temperatureLetter
                 + ", humidity=" + this.humidity + ", battery_ok="
-                + this.battery_ok + "]";
+                + this.battery_ok + ", timestamp=" + this.timestamp
+                + ", illuminance_lux=" + this.illuminance_lux + ", pressure="
+                + this.pressure + ", voc=" + this.voc + "]";
     }
 
     @Override
