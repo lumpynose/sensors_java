@@ -40,7 +40,7 @@ public class HttpClientPrometheus {
         final HttpResponse<String> response = this.client.send(request,
                 BodyHandlers.ofString());
 
-        log.debug("response: " + response);
+        log.debug("response: {}", response);
 
         final Gson gson = new Gson();
 

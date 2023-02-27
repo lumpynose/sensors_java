@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -15,7 +14,6 @@ import com.objecteffects.temperature.sensors.TUnit;
 public class AppProperties {
     private final static Properties appProps = new Properties();
     private final static String PROPERTIES = "mqtt.properties";
-    private final Map<String, TUnit> tunits = new HashMap<>();
 
     public void loadProperties() throws FileNotFoundException, IOException {
         try (InputStream root = new AppProperties().getClass().getClassLoader()
