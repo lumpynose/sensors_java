@@ -19,6 +19,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -31,8 +32,7 @@ import org.apache.logging.log4j.Logger;
 import com.objecteffects.temperature.sensors.SensorData;
 
 final public class Sensors implements ISensors {
-    private final static Logger log = LogManager
-            .getLogger(Sensors.class);
+    private final static Logger log = LogManager.getLogger(Sensors.class);
 
     private static final String NAME = "name";
     private final static String TEMPERATURE = "temperature";
@@ -63,7 +63,8 @@ final public class Sensors implements ISensors {
     private final static Font vocFont = new Font("Arial", Font.PLAIN, 16);
     private final static Font timeFont = new Font("Arial", Font.PLAIN, 12);
 
-    private final static Map<String, Map<String, JLabel>> panelsMap = new HashMap<>();
+    private final static Map<String, Map<String, JComponent>> panelsMap = new HashMap<>();
+    private static WeatherPainter wp = null;
 
     private final static JFrame frame = new JFrame("temperatures");
     private final static JPanel mainPanel = new JPanel();
@@ -88,7 +89,7 @@ final public class Sensors implements ISensors {
 
     @Override
     public void addSensor(final SensorData data) {
-        final Map<String, JLabel> labelsMap = new HashMap<>();
+        final Map<String, JComponent> labelsMap = new HashMap<>();
 
         panelsMap.put(data.getSensorName(), labelsMap);
 
@@ -144,7 +145,10 @@ final public class Sensors implements ISensors {
             }
         });
 
-        final JLabel temperatureLabel = new JLabel();
+        final JButton temperatureLabel = new JButton();
+
+        temperatureLabel.setBorderPainted(false);
+        temperatureLabel.setFocusPainted(false);
 
         temperatureLabel.setText(String.format(TFORMAT,
                 Double.valueOf(data.getTemperatureShow()),
@@ -152,9 +156,17 @@ final public class Sensors implements ISensors {
         temperatureLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         temperatureLabel.setName(TEMPERATURE);
-        temperatureLabel.setOpaque(false);
+        temperatureLabel.setOpaque(true);
+        temperatureLabel.setBackground(valuesColor);
         temperatureLabel.setFont(temperatureFont);
         temperatureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        temperatureLabel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                temperatureLabelPressed();
+            }
+        });
 
         valuesPanel.add(temperatureLabel);
         valuesPanel.add(Box.createRigidArea(new Dimension(0, VSPACE)));
@@ -311,15 +323,16 @@ final public class Sensors implements ISensors {
 
         log.debug("updating: {}", data.getSensorName());
 
-        final Map<String, JLabel> labels = panelsMap.get(data.getSensorName());
+        final Map<String, JComponent> labels = panelsMap
+                .get(data.getSensorName());
 
-        final JLabel temperatureLabel = labels.get(TEMPERATURE);
+        final JButton temperatureLabel = (JButton) labels.get(TEMPERATURE);
         final String temperature = String.format(TFORMAT,
                 Double.valueOf(data.getTemperatureShow()));
         temperatureLabel.setText(temperature);
 
         if (Float.isFinite(data.getHumidity())) {
-            final JLabel humidityLabel = labels.get(HUMIDITY);
+            final JLabel humidityLabel = (JLabel) labels.get(HUMIDITY);
 
             if (humidityLabel != null) {
                 final String humidity = String.format(HFORMAT,
@@ -329,7 +342,7 @@ final public class Sensors implements ISensors {
         }
 
         if (data.getLuminance() > Integer.MIN_VALUE) {
-            final JLabel luminanceLabel = labels.get(LUMINANCE);
+            final JLabel luminanceLabel = (JLabel) labels.get(LUMINANCE);
 
             if (luminanceLabel != null) {
                 final String luminance = String.format(LUMFORMAT,
@@ -339,7 +352,7 @@ final public class Sensors implements ISensors {
         }
 
         if (Float.isFinite(data.getPressure())) {
-            final JLabel pressureLabel = labels.get(PRESSURE);
+            final JLabel pressureLabel = (JLabel) labels.get(PRESSURE);
 
             if (pressureLabel != null) {
                 final String pressure = String.format(PRESSFORMAT,
@@ -349,7 +362,7 @@ final public class Sensors implements ISensors {
         }
 
         if (data.getVoc() > Integer.MIN_VALUE) {
-            final JLabel vocLabel = labels.get(VOC);
+            final JLabel vocLabel = (JLabel) labels.get(VOC);
 
             if (vocLabel != null) {
                 final String voc = String.format(VOCFORMAT,
@@ -358,15 +371,25 @@ final public class Sensors implements ISensors {
             }
         }
 
-        final JLabel timeLabel = labels.get(TIME);
+        final JLabel timeLabel = (JLabel) labels.get(TIME);
         timeLabel.setText(data.getTimestamp());
     }
 
     private void nameButtonPressed(final JPanel valuesPanel) {
-        log.debug("button pressed");
-
         valuesPanel.setVisible(!valuesPanel.isVisible());
 
         frame.pack();
+    }
+
+    private void temperatureLabelPressed() {
+        if (wp != null && wp.isShowing()) {
+            wp.dispose();
+
+            wp = null;
+
+            return;
+        }
+
+        wp = new WeatherPainter();
     }
 }
