@@ -32,16 +32,16 @@ class HttpClientTests {
 
         final HttpResponse<String> response = client.sendAndReceive(upQuery2);
 
-        log.debug("status: " + response.statusCode());
-        log.debug("response body: " + response.body());
+        log.debug("status: {}", response.statusCode());
+        log.debug("response body: {}", response.body());
 
         final Gson gson = new Gson();
 
         final PromDataMatrix target = gson.fromJson(response.body(),
                 PromDataMatrix.class);
 
-        log.debug("target: " + target);
-        log.debug("data: " + target.getData());
+        log.debug("target: {}", target);
+        log.debug("data: {}", target.getData());
     }
 
 //    @Test
@@ -75,24 +75,24 @@ class HttpClientTests {
 
         final HttpResponse<String> response = client.sendAndReceive(query);
 
-        log.debug("status: " + response.statusCode());
-        log.debug("response body: " + response.body());
+        log.debug("status: {}", response.statusCode());
+        log.debug("response body: {}", response.body());
 
         final Gson gson = new Gson();
 
         final PromDataMatrix promDataMatrix = gson.fromJson(response.body(),
                 PromDataMatrix.class);
-        log.debug("promData: " + promDataMatrix);
+        log.debug("promData: {}", promDataMatrix);
 
         for (final PromDataMatrix.PromSensor ps : promDataMatrix.getData()
                 .getResult()) {
-            log.debug(String.format("sensor: %s, %s",
-                    ps.getMetric().getSensor(), ps.getMetric().getJob()));
+            log.debug("sensor: {}, {}", ps.getMetric().getSensor(),
+                    ps.getMetric().getJob());
 
             for (final JsonArray values : ps.getValues()) {
-                log.debug(String.format("values: %s, %s",
+                log.debug("values: {}, {}",
                         new Date(values.get(0).getAsLong() * 1000L),
-                        values.get(1)));
+                        values.get(1));
             }
         }
     }
@@ -107,23 +107,23 @@ class HttpClientTests {
 
         final HttpResponse<String> response = client.sendAndReceive(query);
 
-        log.debug("status: " + response.statusCode());
-        log.debug("response body: " + response.body());
+        log.debug("status: {}", response.statusCode());
+        log.debug("response body: {}", response.body());
 
         final Gson gson = new Gson();
 
         final PromDataVector promDataVector = gson.fromJson(response.body(),
                 PromDataVector.class);
-        log.debug("promData: " + promDataVector);
+        log.debug("promData: {}", promDataVector);
 
         for (final PromDataVector.PromSensor ps : promDataVector.getData()
                 .getResult()) {
-            log.debug(String.format("sensor: %s, %s",
-                    ps.getMetric().getSensor(), ps.getMetric().getJob()));
+            log.debug("sensor: {}, {}", ps.getMetric().getSensor(),
+                    ps.getMetric().getJob());
 
             final List<JsonPrimitive> value = ps.getValue();
-            log.debug(String.format("values: %s, %s",
-                    new Date(value.get(0).getAsLong() * 1000L), value.get(1)));
+            log.debug("values: {}, {}",
+                    new Date(value.get(0).getAsLong() * 1000L), value.get(1));
         }
     }
 }
