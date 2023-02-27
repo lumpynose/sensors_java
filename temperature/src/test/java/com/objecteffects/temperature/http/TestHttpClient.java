@@ -16,7 +16,6 @@ import com.google.gson.JsonPrimitive;
 
 /**
  * @author rusty
- *
  */
 class TestHttpClient {
     private final static Logger log = LogManager.getLogger();
