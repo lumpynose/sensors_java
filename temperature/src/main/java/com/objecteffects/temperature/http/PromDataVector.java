@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.gson.JsonPrimitive;
 
-public class PromDataVector extends PromResponseEnvelope {
+public class PromDataVector extends PromResponse {
     private PromResponseData data;
 
     public PromResponseData getData() {
@@ -39,33 +39,15 @@ public class PromDataVector extends PromResponseEnvelope {
             return this.metric;
         }
 
-        public List<JsonPrimitive> getValue() {
-            return this.value;
+        public PromValue getValue() {
+            return new PromValue(this.value.get(0).getAsLong(),
+                    this.value.get(1).getAsString());
         }
 
         @Override
         public String toString() {
             return "PromSensor <<metric=" + this.metric + ", value="
                     + this.value + ">>";
-        }
-    }
-
-    class PromMetric {
-        private String job;
-        private String sensor;
-
-        public String getJob() {
-            return this.job;
-        }
-
-        public String getSensor() {
-            return this.sensor;
-        }
-
-        @Override
-        public String toString() {
-            return "PromMetric <<job=" + this.job + ", sensor=" + this.sensor
-                    + ">>";
         }
     }
 }

@@ -18,23 +18,21 @@ import com.google.gson.Gson;
 public class HttpClientPrometheus {
     private final static Logger log = LogManager.getLogger();
 
-    HttpClient client;
+    private final HttpClient client = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(5)).version(Version.HTTP_2)
+            .followRedirects(Redirect.NORMAL).build();
 
-    public HttpClientPrometheus() {
-        this.client = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(5)).version(Version.HTTP_2)
-                .followRedirects(Redirect.NORMAL).build();
-    }
+    public HttpResponse<String> sendAndReceive(final String query,
+            final String params) throws IOException, InterruptedException {
+        final String fullQuery = String
+                .format("http://192.168.50.9:9090/api/v1/%s", query);
 
-    public HttpResponse<String> sendAndReceive(final String params)
-            throws IOException, InterruptedException {
-        final String query = String.format("http://192.168.50.9:9090/api/v1/%s",
-                params);
-
-        log.debug("query: " + query);
+        log.debug("query: " + fullQuery);
 
         final HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(query)).GET().timeout(Duration.ofSeconds(5))
+                .headers("Content-Type", "application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString(params))
+                .uri(URI.create(fullQuery)).timeout(Duration.ofSeconds(5))
                 .build();
 
         final HttpResponse<String> response = this.client.send(request,

@@ -19,7 +19,7 @@ class GraphPanel extends JPanel {
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(640, 640);
+        return new Dimension(640, 480);
     }
 
     @Override
