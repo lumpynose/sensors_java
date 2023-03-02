@@ -1,6 +1,13 @@
 package com.objecteffects.temperature.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import org.apache.logging.log4j.LogManager;
@@ -10,28 +17,47 @@ class WeatherPainter {
     private final static Logger log = LogManager
             .getLogger(WeatherPainter.class);
 
-    final JFrame gframe;
+    final static int PANELWIDTH = 640;
+    final static int PANELHEIGHT = 480;
 
-    WeatherPainter() {
-        this.gframe = new JFrame("temperatures");
+    final JFrame frame;
+
+    public WeatherPainter() {
+        this.frame = new JFrame("temperatures");
+
+        this.frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         log.debug("button pressed");
 
-        final GraphPanel gp = new GraphPanel();
+        final JPanel contentPane = new JPanel();
 
-        this.gframe.setContentPane(gp);
+        contentPane.setLayout(new BorderLayout());
+        contentPane.setBackground(Color.DARK_GRAY);
+        contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        this.gframe.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        this.frame.setContentPane(contentPane);
 
-        this.gframe.pack();
-        this.gframe.setVisible(true);
+        final JMenuBar menuBar = new JMenuBar();
+
+        menuBar.setOpaque(true);
+        menuBar.setBackground(new Color(154, 165, 127));
+        menuBar.setPreferredSize(new Dimension(PANELWIDTH, 20));
+
+        this.frame.setJMenuBar(menuBar);
+
+        final GraphPanel graphPanel = new GraphPanel();
+
+        contentPane.add(graphPanel);
+
+        this.frame.pack();
+        this.frame.setVisible(true);
     }
 
     void dispose() {
-        this.gframe.dispose();
+        this.frame.dispose();
     }
 
     boolean isShowing() {
-        return this.gframe.isShowing();
+        return this.frame.isShowing();
     }
 }
