@@ -4,8 +4,9 @@ package com.objecteffects.temperature.math;
  * https://stackoverflow.com/questions/5731863/mapping-a-numeric-range-onto-another
  */
 public class MathUtils {
-    public static double mapRange(final double sourceNumber, final double fromA,
-            final double fromB, final double toA, final double toB) {
+    @SuppressWarnings("boxing")
+    public static int mapRange(final int sourceNumber, final int fromA,
+            final int fromB, final int toA, final int toB) {
         final double deltaA = fromB - fromA;
         final double deltaB = toB - toA;
         final double scale = deltaB / deltaA;

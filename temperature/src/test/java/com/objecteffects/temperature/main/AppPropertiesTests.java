@@ -16,8 +16,8 @@ class AppPropertiesTests {
 
     public static void main(final String[] args) {
         try {
-            loadProperties();
-            getTopics();
+            AppPropertiesTests.loadProperties();
+            AppPropertiesTests.getTopics();
         }
         catch (final IOException e) {
             // TODO Auto-generated catch block
@@ -29,7 +29,7 @@ class AppPropertiesTests {
             throws FileNotFoundException, IOException {
         final String rootPath = Thread.currentThread().getContextClassLoader()
                 .getResource("").getPath();
-        final String appConfigPath = rootPath + "app.properties";
+        final String appConfigPath = rootPath + "mqtt.properties";
 
         appProps = new Properties();
 

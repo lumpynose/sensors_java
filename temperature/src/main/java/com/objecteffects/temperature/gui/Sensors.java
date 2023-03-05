@@ -64,7 +64,6 @@ final public class Sensors implements ISensors {
     private final static Font timeFont = new Font("Arial", Font.PLAIN, 12);
 
     private final static Map<String, Map<String, JComponent>> panelsMap = new HashMap<>();
-    private static WeatherPainter wp = null;
 
     private final static JFrame frame = new JFrame("temperatures");
     private final static JPanel mainPanel = new JPanel();
@@ -84,10 +83,6 @@ final public class Sensors implements ISensors {
         mainPanel.setBackground(valuesColor);
         mainPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         mainPanel.setName("mainPanel");
-
-//        mainPanel.setMinimumSize(new Dimension(0, 0));
-//        mainPanel.setMaximumSize(
-//                new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
     }
 
     @Override
@@ -167,7 +162,7 @@ final public class Sensors implements ISensors {
         temperatureLabel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                temperatureLabelPressed();
+                WeatherPainter.temperatureLabelPressed();
             }
         });
 
@@ -388,17 +383,5 @@ final public class Sensors implements ISensors {
         valuesPanel.setVisible(!valuesPanel.isVisible());
 
         frame.pack();
-    }
-
-    private void temperatureLabelPressed() {
-        if (wp != null && wp.isShowing()) {
-            wp.dispose();
-
-            wp = null;
-
-            return;
-        }
-
-        wp = new WeatherPainter();
     }
 }

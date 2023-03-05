@@ -1,6 +1,8 @@
 package com.objecteffects.temperature.main;
 
+import java.awt.Desktop;
 import java.awt.GraphicsEnvironment;
+import java.awt.SystemTray;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
@@ -8,8 +10,8 @@ import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.objecteffects.temperature.gui.Sensors;
 import com.objecteffects.temperature.gui.ISensors;
+import com.objecteffects.temperature.gui.Sensors;
 import com.objecteffects.temperature.gui.SensorsNull;
 import com.objecteffects.temperature.mqtt.paho.ListenerPaho;
 
@@ -67,6 +69,20 @@ public class MainPaho {
         final ISensors guiLayout;
 
         if (!GraphicsEnvironment.isHeadless()) {
+            if (Desktop.isDesktopSupported()) {
+                log.debug("desktop supported");
+            }
+            else {
+                log.debug("desktop NOT supported");
+            }
+
+            if (SystemTray.isSupported()) {
+                log.debug("system tray supported");
+            }
+            else {
+                log.debug("system try NOT supported");
+            }
+
             guiLayout = new Sensors();
 
 //            javax.swing.SwingUtilities.invokeLater(new Runnable() {

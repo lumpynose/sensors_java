@@ -1,4 +1,4 @@
-package com.objecteffects.temperature.http;
+package com.objecteffects.temperature.prom;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
@@ -11,14 +11,14 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
-import com.objecteffects.temperature.http.PromResponse.PromValue;
+import com.objecteffects.temperature.prom.PromResponse.PromValue;
 
 /**
  * @author rusty
  */
-class HttpClientTests {
+class PromClientTests {
     private final static Logger log = LogManager
-            .getLogger(HttpClientTests.class);
+            .getLogger(PromClientTests.class);
 
     private final SimpleDateFormat jdf = new SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss");

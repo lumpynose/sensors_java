@@ -1,4 +1,4 @@
-package com.objecteffects.temperature.http;
+package com.objecteffects.temperature.prom;
 
 import java.util.Arrays;
 
