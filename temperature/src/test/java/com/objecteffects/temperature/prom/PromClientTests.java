@@ -4,14 +4,19 @@ import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
-import com.objecteffects.temperature.prom.PromResponse.PromValue;
+import com.objecteffects.temperature.prom.PromDataMatrix.PromSensor;
+import com.objecteffects.temperature.prom.PromResponse.PromValue;;
 
 /**
  * @author rusty
@@ -46,7 +51,33 @@ class PromClientTests {
                 PromDataMatrix.class);
         log.debug("promData: {}", promDataMatrix);
 
-        for (final PromDataMatrix.PromSensor ps : promDataMatrix.getData()
+        final List<PromValue> maxValues = new ArrayList<>();
+        final List<PromValue> minValues = new ArrayList<>();
+
+        promDataMatrix.getData()
+                .getResult()
+                .forEach(new Consumer<PromSensor>() {
+                    @Override
+                    public void accept(final PromSensor ps) {
+                        log.debug("XX sensor: {}, {}",
+                                ps.getMetric().getSensor(),
+                                ps.getMetric().getJob());
+
+                        ps.getValues().forEach(new Consumer<PromValue>() {
+                            @Override
+                            public void accept(final PromValue pv) {
+                                log.debug("XX values: {}, {}",
+                                        PromClientTests.this.jdf.format(
+                                                new Date(pv.getTimestamp()
+                                                        * 1000L)),
+                                        Float.valueOf(pv.getValue()));
+
+                            }
+                        });
+                    }
+                });
+
+        for (final PromSensor ps : promDataMatrix.getData()
                 .getResult()) {
             log.debug("sensor: {}, {}", ps.getMetric().getSensor(),
                     ps.getMetric().getJob());
@@ -55,9 +86,16 @@ class PromClientTests {
                 log.debug("values: {}, {}",
                         this.jdf.format(
                                 new Date(values.getTimestamp() * 1000L)),
-                        values.getValue());
+                        Float.valueOf(values.getValue()));
             }
+
+            maxValues.add(Collections.max(ps.getValues()));
+            minValues.add(Collections.min(ps.getValues()));
         }
+
+        log.debug("max: {}:", Collections.max(maxValues));
+        log.debug("min: {}", Collections.min(minValues));
+
     }
 
     @Test
@@ -89,7 +127,7 @@ class PromClientTests {
             final PromValue value = ps.getValue();
             log.debug("values: {}, {}",
                     this.jdf.format(new Date(value.getTimestamp() * 1000L)),
-                    value.getValue());
+                    Float.valueOf(value.getValue()));
         }
     }
 

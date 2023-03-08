@@ -14,7 +14,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 class WeatherPainter {
-    private final static Logger log = LogManager.getLogger(GraphPanel1.class);
+    private final static Logger log = LogManager
+            .getLogger(WeatherPainter.class);
 
     final static int PANELWIDTH = 640;
     final static int PANELHEIGHT = 480;
@@ -87,16 +88,16 @@ class WeatherPainter {
     }
 
     void addGraphPanels(final JLayeredPane layeredPane) {
-        final GraphPanel1 graphPanel1 = new GraphPanel1();
-        graphPanel1.setBounds(0, 0, PANELWIDTH, PANELHEIGHT);
+        final GraphPanel1 testGraphPanel1 = new GraphPanel1();
+        testGraphPanel1.setBounds(0, 0, PANELWIDTH, PANELHEIGHT);
 
-        layeredPane.add(graphPanel1, Integer.valueOf(8));
+        layeredPane.add(testGraphPanel1, Integer.valueOf(8));
 //        graphPanel1.setVisible(true);
 
-        final GraphPanel2 graphPanel2 = new GraphPanel2();
-        graphPanel2.setBounds(0, 0, PANELWIDTH, PANELHEIGHT);
+        final GraphPanel2 testGraphPanel2 = new GraphPanel2();
+        testGraphPanel2.setBounds(0, 0, PANELWIDTH, PANELHEIGHT);
 
-        layeredPane.add(graphPanel2, Integer.valueOf(12));
+        layeredPane.add(testGraphPanel2, Integer.valueOf(12));
 //        graphPanel2.setVisible(true);
     }
 

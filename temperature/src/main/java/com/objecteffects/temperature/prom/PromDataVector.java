@@ -13,10 +13,10 @@ public class PromDataVector extends PromResponse {
 
     @Override
     public String toString() {
-        return "PromDataMatrix <<data=" + this.data + ">>";
+        return "PromDataMatrix: <<data=" + this.data + ">>";
     }
 
-    class PromResponseData {
+    static class PromResponseData {
         private String resultType;
         private List<PromSensor> result;
 
@@ -26,27 +26,42 @@ public class PromDataVector extends PromResponse {
 
         @Override
         public String toString() {
-            return "PromResponseData <<resultType=" + this.resultType
+            return "PromResponseData: <<resultType=" + this.resultType
                     + ", result=" + this.result + ">>";
         }
     }
 
-    class PromSensor {
+    static class PromSensor {
         private PromMetric metric;
         private List<JsonPrimitive> value;
+        private PromValue pvValue = null;
 
         public PromMetric getMetric() {
             return this.metric;
         }
 
         public PromValue getValue() {
-            return new PromValue(this.value.get(0).getAsLong(),
-                    this.value.get(1).getAsString());
+            if (this.pvValue == null) {
+                float floatVal;
+
+                try {
+                    floatVal = Float
+                            .parseFloat(this.value.get(1).getAsString());
+                }
+                catch (@SuppressWarnings("unused") final Exception e) {
+                    floatVal = Float.NaN;
+                }
+
+                this.pvValue = new PromValue(this.value.get(0).getAsLong(),
+                        floatVal);
+            }
+
+            return this.pvValue;
         }
 
         @Override
         public String toString() {
-            return "PromSensor <<metric=" + this.metric + ", value="
+            return "PromSensor: <<metric=" + this.metric + ", value="
                     + this.value + ">>";
         }
     }

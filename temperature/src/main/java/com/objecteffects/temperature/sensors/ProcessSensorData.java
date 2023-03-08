@@ -1,6 +1,5 @@
 package com.objecteffects.temperature.sensors;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -14,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
 import com.objecteffects.temperature.gui.ISensors;
-import com.objecteffects.temperature.main.AppProperties;
+import com.objecteffects.temperature.main.MainPaho;
 
 public class ProcessSensorData {
     private final static Logger log = LogManager
@@ -23,27 +22,12 @@ public class ProcessSensorData {
     private final static Collection<SensorData> sensors = Collections
             .synchronizedSet(new HashSet<>());
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
-    private static AppProperties props;
-    private static Map<String, String> propSensors = null;
+    private static Map<String, String> propSensors = MainPaho.getPropSensors();
     private static ISensors guiLayout;
-    private static TUnit tunit;
+    private static TUnit tunit = MainPaho.getTunit();
 
     public ProcessSensorData(final ISensors _guiLayout) {
         guiLayout = _guiLayout;
-        props = new AppProperties();
-
-        try {
-            props.loadProperties();
-        }
-        catch (final IOException e) {
-            e.printStackTrace();
-
-            throw new RuntimeException(e);
-        }
-
-        propSensors = props.getSensors();
-
-        tunit = props.getTUnit();
     }
 
     public void processData(final String topic, final String data) {

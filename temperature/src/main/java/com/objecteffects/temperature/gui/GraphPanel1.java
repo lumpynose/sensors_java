@@ -54,7 +54,7 @@ class GraphPanel1 extends JPanel {
         g2d.fillRoundRect(100, -130, 80, 100, 8, 8);
 
         g2d.setFont(new Font("Dialog", Font.PLAIN, 24));
-        g2d.drawString("GraphPanel1?", 200, -100);
+        g2d.drawString("TestGraphPanel1?", 200, -100);
 
         g2d.dispose();
     }

@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.JsonArray;
+import com.objecteffects.temperature.main.MainPaho;
+import com.objecteffects.temperature.sensors.TUnit;
 
 public class PromDataMatrix extends PromResponse {
     private PromResponseData data;
+    private static TUnit tunit = MainPaho.getTunit();
 
     public PromResponseData getData() {
         return this.data;
@@ -14,10 +17,10 @@ public class PromDataMatrix extends PromResponse {
 
     @Override
     public String toString() {
-        return "PromDataMatrix <<data=" + this.data + ">>";
+        return "PromDataMatrix: <<data=" + this.data + ">>";
     }
 
-    class PromResponseData {
+    static class PromResponseData {
         private String resultType;
         private List<PromSensor> result;
 
@@ -27,32 +30,45 @@ public class PromDataMatrix extends PromResponse {
 
         @Override
         public String toString() {
-            return "PromResponseData <<resultType=" + this.resultType
+            return "PromResponseData: <<resultType=" + this.resultType
                     + ", result=" + this.result + ">>";
         }
     }
 
-    class PromSensor {
+    static class PromSensor {
         private PromMetric metric;
         private List<JsonArray> values;
+        private List<PromValue> pvValues = null;
 
         public PromMetric getMetric() {
             return this.metric;
         }
 
         public List<PromValue> getValues() {
-            final List<PromValue> pvValues = new ArrayList<>();
+            if (this.pvValues == null) {
+                this.pvValues = new ArrayList<>();
 
-            for (final JsonArray v : this.values) {
-                pvValues.add(new PromValue(v.get(0).getAsLong(),
-                        v.get(1).getAsString()));
+                for (final JsonArray v : this.values) {
+                    float floatVal;
+
+                    try {
+                        floatVal = Float.parseFloat(v.get(1).getAsString());
+                    }
+                    catch (@SuppressWarnings("unused") final Exception e) {
+                        floatVal = Float.NaN;
+                    }
+
+                    this.pvValues
+                            .add(new PromValue(v.get(0).getAsLong(), floatVal));
+                }
             }
-            return pvValues;
+
+            return this.pvValues;
         }
 
         @Override
         public String toString() {
-            return "PromSensor <<metric=" + this.metric + ", value="
+            return "PromSensor: <<metric=" + this.metric + ", value="
                     + this.values + ">>";
         }
     }

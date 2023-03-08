@@ -15,8 +15,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.objecteffects.temperature.math.MathUtils;
 
-@SuppressWarnings("serial")
-class GraphPanel1 extends JPanel {
+class TestGraphPanel1 extends JPanel {
+    private static final long serialVersionUID = 1L;
     private final static Logger log = LogManager.getLogger(GraphPanel1.class);
 
     @Override

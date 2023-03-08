@@ -56,16 +56,16 @@ final class WPTests {
     }
 
     void addGraphPanels(final JLayeredPane layeredPane) {
-        final GraphPanel1 graphPanel1 = new GraphPanel1();
-        graphPanel1.setSize(PANELWIDTH, PANELHEIGHT);
-        graphPanel1.setLocation(0, 0);
+        final TestGraphPanel1 testGraphPanel1 = new TestGraphPanel1();
+        testGraphPanel1.setSize(PANELWIDTH, PANELHEIGHT);
+        testGraphPanel1.setLocation(0, 0);
 
-        layeredPane.add(graphPanel1, Integer.valueOf(8));
+        layeredPane.add(testGraphPanel1, Integer.valueOf(8));
 
-        final GraphPanel2 graphPanel2 = new GraphPanel2();
-        graphPanel2.setBounds(0, 0, PANELWIDTH, PANELHEIGHT);
+        final TestGraphPanel2 testGraphPanel2 = new TestGraphPanel2();
+        testGraphPanel2.setBounds(0, 0, PANELWIDTH, PANELHEIGHT);
 
-        layeredPane.add(graphPanel2, Integer.valueOf(12));
+        layeredPane.add(testGraphPanel2, Integer.valueOf(12));
     }
 
     void dispose() {

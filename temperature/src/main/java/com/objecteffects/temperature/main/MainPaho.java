@@ -5,6 +5,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.SystemTray;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
@@ -14,6 +15,7 @@ import com.objecteffects.temperature.gui.ISensors;
 import com.objecteffects.temperature.gui.Sensors;
 import com.objecteffects.temperature.gui.SensorsNull;
 import com.objecteffects.temperature.mqtt.paho.ListenerPaho;
+import com.objecteffects.temperature.sensors.TUnit;
 
 public class MainPaho {
     static {
@@ -29,20 +31,11 @@ public class MainPaho {
 
     private final static Logger log = LogManager.getLogger(MainPaho.class);
     private final static AppProperties props = new AppProperties();
+    private static Map<String, String> propSensors = null;
+    private static TUnit tunit;
 
     private static void startMqttListener(final ISensors guiLayout) {
-        try {
-            props.loadProperties();
-        }
-        catch (final IOException e) {
-            for (final StackTraceElement ste : e.getStackTrace()) {
-                log.warn(ste.toString());
-            }
-
-            throw new RuntimeException(e);
-        }
-
-        log.debug("sensors: {}", props.getSensors());
+        getProps();
 
         final ListenerPaho listener = new ListenerPaho(guiLayout);
 
@@ -62,6 +55,33 @@ public class MainPaho {
         }
 
         log.debug("listener started");
+    }
+
+    private static void getProps() {
+        try {
+            props.loadProperties();
+        }
+        catch (final IOException e) {
+            for (final StackTraceElement ste : e.getStackTrace()) {
+                log.warn(ste.toString());
+            }
+
+            throw new RuntimeException(e);
+        }
+
+        tunit = props.getTUnit();
+
+        propSensors = props.getSensors();
+
+        log.debug("sensors: {}", props.getSensors());
+    }
+
+    public static TUnit getTunit() {
+        return tunit;
+    }
+
+    public static Map<String, String> getPropSensors() {
+        return propSensors;
     }
 
     public static void main(final String[] args)

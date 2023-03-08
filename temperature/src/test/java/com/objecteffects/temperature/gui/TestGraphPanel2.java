@@ -13,8 +13,8 @@ import javax.swing.JPanel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@SuppressWarnings("serial")
-class GraphPanel2 extends JPanel {
+class TestGraphPanel2 extends JPanel {
+    private static final long serialVersionUID = 1L;
     @SuppressWarnings("unused")
     private final static Logger log = LogManager.getLogger(GraphPanel2.class);
 

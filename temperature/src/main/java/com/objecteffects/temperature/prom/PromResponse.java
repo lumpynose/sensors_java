@@ -1,6 +1,7 @@
 package com.objecteffects.temperature.prom;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public abstract class PromResponse {
     private String status;
@@ -24,7 +25,7 @@ public abstract class PromResponse {
         return this.warnings;
     }
 
-    public class PromMetric {
+    static public class PromMetric {
         private String job;
         private String sensor;
 
@@ -43,21 +44,50 @@ public abstract class PromResponse {
         }
     }
 
-    public class PromValue {
+    static public class PromValue implements Comparable<PromValue> {
         long timestamp;
-        String value;
+        float value;
 
         public long getTimestamp() {
             return this.timestamp;
         }
 
-        public String getValue() {
+        public float getValue() {
             return this.value;
         }
 
-        PromValue(final long _timestamp, final String _value) {
+        PromValue(final long _timestamp, final float _value) {
             this.timestamp = _timestamp;
             this.value = _value;
+        }
+
+        @Override
+        public int compareTo(final PromValue o) {
+            return Float.compare(this.value, o.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(Long.valueOf(this.timestamp),
+                    Float.valueOf(this.value));
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (this == obj)
+                return true;
+
+            if (obj == null)
+                return false;
+
+            if (getClass() != obj.getClass())
+                return false;
+
+            final PromValue other = (PromValue) obj;
+
+            return this.timestamp == other.timestamp
+                    && Float.floatToIntBits(this.value) == Float
+                            .floatToIntBits(other.value);
         }
 
         @Override
@@ -65,6 +95,38 @@ public abstract class PromResponse {
             return "PromValue <<timestamp=" + this.timestamp + ", value="
                     + this.value + ">>";
         }
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+
+        result = prime * result + Arrays.hashCode(this.warnings);
+
+        result = prime * result
+                + Objects.hash(this.error, this.errorType, this.status);
+
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj)
+            return true;
+
+        if (obj == null)
+            return false;
+
+        if (getClass() != obj.getClass())
+            return false;
+
+        final PromResponse other = (PromResponse) obj;
+
+        return Objects.equals(this.error, other.error)
+                && Objects.equals(this.errorType, other.errorType)
+                && Objects.equals(this.status, other.status)
+                && Arrays.equals(this.warnings, other.warnings);
     }
 
     @Override

@@ -36,7 +36,7 @@ class GraphPanel2 extends JPanel {
         g2d.setColor(new Color(128, 8, 0));
 
         g2d.setFont(new Font("Dialog", Font.PLAIN, 24));
-        g2d.drawString("This is my custom GraphPanel2?",
+        g2d.drawString("This is my custom TestGraphPanel2?",
                 (int) (WeatherPainter.PANELWIDTH / 2.5),
                 -WeatherPainter.PANELHEIGHT / 2);
 
@@ -47,7 +47,7 @@ class GraphPanel2 extends JPanel {
         g2d.draw(new RoundRectangle2D.Float(110, -290, 120, 100, 10, 10));
         g2d.draw(new RoundRectangle2D.Float(150, -250, 110, 10, 5, 5));
 
-        g2d.drawString("GraphPanel2?", 300, -100);
+        g2d.drawString("TestGraphPanel2?", 300, -100);
 
         g2d.dispose();
     }
