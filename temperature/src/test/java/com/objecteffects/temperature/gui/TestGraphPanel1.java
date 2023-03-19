@@ -25,6 +25,7 @@ class TestGraphPanel1 extends JPanel {
                 WeatherPainter.PANELHEIGHT);
     }
 
+    // @Override
     @Override
     @SuppressWarnings("boxing")
     public void paintComponent(final Graphics g) {
