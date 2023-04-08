@@ -3,6 +3,7 @@ package com.objecteffects.temperature.main;
 import java.awt.Desktop;
 import java.awt.GraphicsEnvironment;
 import java.awt.SystemTray;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -87,7 +88,7 @@ public class MainPaho {
     public static void main(final String[] args)
             throws InvocationTargetException, InterruptedException {
         final ISensors guiLayout;
-
+        Toolkit.getDefaultToolkit().getScreenSize();
         if (!GraphicsEnvironment.isHeadless()) {
             if (Desktop.isDesktopSupported()) {
                 log.debug("desktop supported");
