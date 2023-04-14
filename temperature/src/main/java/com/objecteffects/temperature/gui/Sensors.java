@@ -34,7 +34,7 @@ import com.objecteffects.temperature.sensors.SensorData;
 final public class Sensors implements ISensors {
     private final static Logger log = LogManager.getLogger(Sensors.class);
 
-    private static final String NAME = "name";
+    private final static String NAME = "name";
     private final static String TEMPERATURE = "temperature";
     private final static String HUMIDITY = "humidity";
     private final static String TIME = "time";
@@ -70,8 +70,6 @@ final public class Sensors implements ISensors {
 
     @Override
     public void setup() {
-        // BoxLayout for the mainPanel,
-        // GridLayout for the sensorPanels
         final LayoutManager boxLayout = new BoxLayout(mainPanel,
                 BoxLayout.Y_AXIS);
         mainPanel.setLayout(boxLayout);
@@ -103,7 +101,6 @@ final public class Sensors implements ISensors {
 
         log.debug("sensor name: {}", data.getSensorName());
 
-        // final JLabel nameLabel = new JLabel();
         final JButton nameButton = new JButton();
 
         nameButton.setBorderPainted(false);

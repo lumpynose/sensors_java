@@ -88,36 +88,44 @@ public class MainPaho {
     public static void main(final String[] args)
             throws InvocationTargetException, InterruptedException {
         final ISensors guiLayout;
+
         Toolkit.getDefaultToolkit().getScreenSize();
-        if (!GraphicsEnvironment.isHeadless()) {
-            if (Desktop.isDesktopSupported()) {
-                log.debug("desktop supported");
-            }
-            else {
-                log.debug("desktop NOT supported");
-            }
 
-            if (SystemTray.isSupported()) {
-                log.debug("system tray supported");
-            }
-            else {
-                log.debug("system try NOT supported");
-            }
-
-            guiLayout = new Sensors();
-
-//            javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
-                @Override
-                public void run() {
-                    guiLayout.setup();
-                }
-            });
+        if (GraphicsEnvironment.isHeadless()) {
+            guiLayout = new SensorsNull();
         }
         else {
-            guiLayout = new SensorsNull();
+            guiLayout = guiSetup();
         }
 
         startMqttListener(guiLayout);
+    }
+
+    private static ISensors guiSetup()
+            throws InterruptedException, InvocationTargetException {
+        final ISensors guiLayout;
+        if (Desktop.isDesktopSupported()) {
+            log.debug("desktop supported");
+        }
+        else {
+            log.debug("desktop NOT supported");
+        }
+
+        if (SystemTray.isSupported()) {
+            log.debug("system tray supported");
+        }
+        else {
+            log.debug("system try NOT supported");
+        }
+
+        guiLayout = new Sensors();
+
+        javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+            @Override
+            public void run() {
+                guiLayout.setup();
+            }
+        });
+        return guiLayout;
     }
 }
