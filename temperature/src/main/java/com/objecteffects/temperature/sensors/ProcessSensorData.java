@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
 import com.objecteffects.temperature.gui.ISensors;
-import com.objecteffects.temperature.main.MainPaho;
+import com.objecteffects.temperature.main.Configuration;
 
 public class ProcessSensorData {
     private final static Logger log = LogManager
@@ -22,9 +22,9 @@ public class ProcessSensorData {
     private final static Collection<SensorData> sensors = Collections
             .synchronizedSet(new HashSet<>());
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
-    private static Map<String, String> propSensors = MainPaho.getPropSensors();
+    private static Map<String, String> propSensors = Configuration.getSensors();
     private static ISensors guiLayout;
-    private static TUnit tunit = MainPaho.getTunit();
+    private static TUnit tunit = Configuration.getTUnit();
 
     public ProcessSensorData(final ISensors _guiLayout) {
         guiLayout = _guiLayout;

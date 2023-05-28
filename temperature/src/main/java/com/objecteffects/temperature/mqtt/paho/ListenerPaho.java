@@ -16,11 +16,12 @@ import com.objecteffects.temperature.gui.ISensors;
 public class ListenerPaho {
     private final static Logger log = LogManager.getLogger(ListenerPaho.class);
 
-    private final int qos = 1;
+    private final static int qos = 2;
 
     private static MqttClient client;
 
-    private static final MemoryPersistence persistence = new MemoryPersistence();
+    private static final MemoryPersistence persistence =
+            new MemoryPersistence();
     private final ISensors guiLayout;
 
     public ListenerPaho(final ISensors _guiLayout) {
@@ -50,9 +51,7 @@ public class ListenerPaho {
             log.debug("cause: {}", me.getCause());
             log.debug("excep: {}", me);
 
-            for (final StackTraceElement ste : me.getStackTrace()) {
-                log.warn(ste.toString());
-            }
+            log.warn(me);
 
             throw me;
         }
@@ -60,24 +59,21 @@ public class ListenerPaho {
         client.setCallback(new CallbacksPaho(client, this.guiLayout));
     }
 
-    public void listen(final String topic) throws Exception {
+    public static void listen(final String topic) throws Exception {
         try {
             log.debug("Subscribing to topic: {}", topic);
 
-            final MqttSubscription sub = new MqttSubscription(topic, this.qos);
+            final MqttSubscription sub = new MqttSubscription(topic, qos);
 
             final IMqttToken token = client
                     .subscribe(new MqttSubscription[] { sub });
 
             log.debug("token: {}", token.getResponse());
         }
-        catch (final Exception e) {
-            for (final StackTraceElement ste : e.getStackTrace()) {
-                log.warn(ste.toString());
-            }
+        catch (final Exception ex) {
+            log.warn(ex);
 
-            throw e;
+            throw ex;
         }
     }
-
 }

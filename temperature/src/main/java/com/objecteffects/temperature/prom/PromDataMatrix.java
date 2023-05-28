@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.JsonArray;
-import com.objecteffects.temperature.main.MainPaho;
-import com.objecteffects.temperature.sensors.TUnit;
 
 public class PromDataMatrix extends PromResponse {
     private PromResponseData data;
-    private static TUnit tunit = MainPaho.getTunit();
+//    private static TUnit tunit = Configuration.getTUnit();
 
     public PromResponseData getData() {
         return this.data;

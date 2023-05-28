@@ -4,11 +4,10 @@ import java.awt.Desktop;
 import java.awt.GraphicsEnvironment;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,7 +15,6 @@ import com.objecteffects.temperature.gui.ISensors;
 import com.objecteffects.temperature.gui.Sensors;
 import com.objecteffects.temperature.gui.SensorsNull;
 import com.objecteffects.temperature.mqtt.paho.ListenerPaho;
-import com.objecteffects.temperature.sensors.TUnit;
 
 public class MainPaho {
     static {
@@ -31,28 +29,23 @@ public class MainPaho {
     }
 
     private final static Logger log = LogManager.getLogger(MainPaho.class);
-    private final static AppProperties props = new AppProperties();
-    private static Map<String, String> propSensors = null;
-    private static TUnit tunit;
+    private static ISensors guiLayout;
+    private static ListenerPaho listener;
 
-    private static void startMqttListener(final ISensors guiLayout) {
+    public static void startMqttListener() {
         getProps();
 
-        final ListenerPaho listener = new ListenerPaho(guiLayout);
-
         try {
-            listener.connect(props.getBrokerAddress());
+            listener.connect(Configuration.getBrokerAddress());
 
-            for (final String topic : props.getTopics()) {
+            for (final String topic : Configuration.getTopics()) {
                 listener.listen(topic);
             }
         }
-        catch (final Exception e) {
-            for (final StackTraceElement ste : e.getStackTrace()) {
-                log.warn(ste.toString());
-            }
+        catch (final Exception ex) {
+            log.warn("connect", ex);
 
-            throw new RuntimeException(e);
+            throw new RuntimeException(ex);
         }
 
         log.debug("listener started");
@@ -60,50 +53,33 @@ public class MainPaho {
 
     private static void getProps() {
         try {
-            props.loadProperties();
+            Configuration.loadConfiguration();
         }
-        catch (final IOException e) {
-            for (final StackTraceElement ste : e.getStackTrace()) {
-                log.warn(ste.toString());
-            }
+        catch (final ConfigurationException ex) {
+            log.error("loadConfiguration", ex);
 
-            throw new RuntimeException(e);
+            throw new RuntimeException(ex);
         }
-
-        tunit = props.getTUnit();
-
-        propSensors = props.getSensors();
-
-        log.debug("sensors: {}", props.getSensors());
     }
 
-    public static TUnit getTunit() {
-        return tunit;
-    }
-
-    public static Map<String, String> getPropSensors() {
-        return propSensors;
-    }
-
-    public static void main(final String[] args)
-            throws InvocationTargetException, InterruptedException {
-        final ISensors guiLayout;
-
+    public static void main(final String[] args) {
         Toolkit.getDefaultToolkit().getScreenSize();
 
         if (GraphicsEnvironment.isHeadless()) {
             guiLayout = new SensorsNull();
         }
         else {
-            guiLayout = guiSetup();
+            guiLayout = new Sensors();
         }
 
-        startMqttListener(guiLayout);
+        listener = new ListenerPaho(guiLayout);
+
+        guiSetup();
+
+        startMqttListener();
     }
 
-    private static ISensors guiSetup()
-            throws InterruptedException, InvocationTargetException {
-        final ISensors guiLayout;
+    private static void guiSetup() {
         if (Desktop.isDesktopSupported()) {
             log.debug("desktop supported");
         }
@@ -118,14 +94,23 @@ public class MainPaho {
             log.debug("system try NOT supported");
         }
 
-        guiLayout = new Sensors();
+        try {
+            javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    guiLayout.setup();
+                }
+            });
+        }
+        catch (final InvocationTargetException e) {
+            log.warn(e);
 
-        javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
-            @Override
-            public void run() {
-                guiLayout.setup();
-            }
-        });
-        return guiLayout;
+            throw new RuntimeException(e);
+        }
+        catch (final InterruptedException e) {
+            log.warn(e);
+
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -14,6 +14,7 @@ import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
 
 import com.objecteffects.temperature.gui.ISensors;
 import com.objecteffects.temperature.main.AppProperties;
+import com.objecteffects.temperature.main.MainPaho;
 import com.objecteffects.temperature.sensors.ProcessSensorData;
 
 public class CallbacksPaho implements MqttCallback {
@@ -21,12 +22,10 @@ public class CallbacksPaho implements MqttCallback {
 
     private final MqttClient client;
     private final ProcessSensorData process;
-    private final ISensors guiLayout;
 
     public CallbacksPaho(final MqttClient _client,
             final ISensors _guiLayout) {
         this.client = _client;
-        this.guiLayout = _guiLayout;
         this.process = new ProcessSensorData(_guiLayout);
     }
 
@@ -42,13 +41,15 @@ public class CallbacksPaho implements MqttCallback {
 
         try {
             this.client.reconnect();
-        }
-        catch (final MqttException e) {
-            for (final StackTraceElement ste : e.getStackTrace()) {
-                log.warn(ste.toString());
-            }
 
-            throw new RuntimeException(e);
+            log.warn("reconnect");
+        }
+        catch (final MqttException ex) {
+            log.warn("reconnect", ex);
+
+            MainPaho.startMqttListener();
+
+            // throw new RuntimeException(ex);
         }
     }
 
@@ -58,13 +59,13 @@ public class CallbacksPaho implements MqttCallback {
 
         try {
             this.client.reconnect();
-        }
-        catch (final MqttException e) {
-            for (final StackTraceElement ste : e.getStackTrace()) {
-                log.warn(ste.toString());
-            }
 
-            throw new RuntimeException(e);
+            log.warn("reconnect");
+        }
+        catch (final MqttException ex) {
+            log.warn("mqttErrorOccurred", ex);
+
+            throw new RuntimeException(ex);
         }
     }
 
@@ -90,9 +91,10 @@ public class CallbacksPaho implements MqttCallback {
             props.setCorrelationData(corrData.getBytes());
             final String content = "Got message with correlation data "
                     + corrData;
-            response.setPayload(content.getBytes());
 
+            response.setPayload(content.getBytes());
             response.setProperties(props);
+
             this.client.publish(responseTopic, response);
         }
     }
@@ -110,26 +112,20 @@ public class CallbacksPaho implements MqttCallback {
         try {
             props.loadProperties();
         }
-        catch (final IOException e) {
-            for (final StackTraceElement ste : e.getStackTrace()) {
-                log.warn(ste.toString());
-            }
+        catch (final IOException ex) {
+            log.warn("loadProperties", ex);
 
-            throw new RuntimeException(e);
+            throw new RuntimeException(ex);
         }
-
-        final ListenerPaho listener = new ListenerPaho(this.guiLayout);
 
         for (final String topic : props.getTopics()) {
             try {
-                listener.listen(topic);
+                ListenerPaho.listen(topic);
             }
-            catch (final Exception e) {
-                for (final StackTraceElement ste : e.getStackTrace()) {
-                    log.warn(ste.toString());
-                }
+            catch (final Exception ex) {
+                log.warn("getTopics", ex);
 
-                throw new RuntimeException(e);
+                throw new RuntimeException(ex);
             }
         }
 
