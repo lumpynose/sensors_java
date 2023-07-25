@@ -6,28 +6,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.paho.mqttv5.client.IMqttToken;
 import org.eclipse.paho.mqttv5.client.MqttCallback;
-import org.eclipse.paho.mqttv5.client.MqttClient;
 import org.eclipse.paho.mqttv5.client.MqttDisconnectResponse;
 import org.eclipse.paho.mqttv5.common.MqttException;
 import org.eclipse.paho.mqttv5.common.MqttMessage;
 import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
 
-import com.objecteffects.temperature.gui.ISensors;
 import com.objecteffects.temperature.main.AppProperties;
-import com.objecteffects.temperature.main.MainPaho;
 import com.objecteffects.temperature.sensors.ProcessSensorData;
 
 public class CallbacksPaho implements MqttCallback {
     private final static Logger log = LogManager.getLogger(CallbacksPaho.class);
-
-    private final MqttClient client;
-    private final ProcessSensorData process;
-
-    public CallbacksPaho(final MqttClient _client,
-            final ISensors _guiLayout) {
-        this.client = _client;
-        this.process = new ProcessSensorData(_guiLayout);
-    }
 
     @Override
     public void disconnected(final MqttDisconnectResponse disconnectResponse) {
@@ -40,14 +28,14 @@ public class CallbacksPaho implements MqttCallback {
         }
 
         try {
-            this.client.reconnect();
+            ListenerPaho.getClient().reconnect();
 
             log.warn("reconnect");
         }
         catch (final MqttException ex) {
-            log.warn("reconnect", ex);
+            log.warn("reconnect in exception", ex);
 
-            MainPaho.startMqttListener();
+            ListenerPaho.startMqttListener();
 
             // throw new RuntimeException(ex);
         }
@@ -58,7 +46,7 @@ public class CallbacksPaho implements MqttCallback {
         log.warn("error occurred: {}", exception);
 
         try {
-            this.client.reconnect();
+            ListenerPaho.getClient().reconnect();
 
             log.warn("reconnect");
         }
@@ -75,7 +63,7 @@ public class CallbacksPaho implements MqttCallback {
         final String messageTxt = new String(mqttMessage.getPayload());
         log.debug("topic: {}, message: {}", topic, messageTxt);
 
-        this.process.processData(topic, messageTxt);
+        ProcessSensorData.processData(topic, messageTxt);
 
         MqttProperties props = mqttMessage.getProperties();
         final String responseTopic = props.getResponseTopic();
@@ -95,7 +83,7 @@ public class CallbacksPaho implements MqttCallback {
             response.setPayload(content.getBytes());
             response.setProperties(props);
 
-            this.client.publish(responseTopic, response);
+            ListenerPaho.getClient().publish(responseTopic, response);
         }
     }
 

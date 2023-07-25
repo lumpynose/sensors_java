@@ -11,24 +11,18 @@ import org.eclipse.paho.mqttv5.client.persist.MemoryPersistence;
 import org.eclipse.paho.mqttv5.common.MqttException;
 import org.eclipse.paho.mqttv5.common.MqttSubscription;
 
-import com.objecteffects.temperature.gui.ISensors;
+import com.objecteffects.temperature.main.Configuration;
 
 public class ListenerPaho {
     private final static Logger log = LogManager.getLogger(ListenerPaho.class);
 
     private final static int qos = 2;
+    private final static MemoryPersistence persistence =
+            new MemoryPersistence();
 
     private static MqttClient client;
 
-    private static final MemoryPersistence persistence =
-            new MemoryPersistence();
-    private final ISensors guiLayout;
-
-    public ListenerPaho(final ISensors _guiLayout) {
-        this.guiLayout = _guiLayout;
-    }
-
-    public void connect(final String broker) throws MqttException {
+    public static void connect(final String broker) throws MqttException {
         try {
             log.debug("Connecting to MQTT broker: {}", broker);
 
@@ -56,7 +50,7 @@ public class ListenerPaho {
             throw me;
         }
 
-        client.setCallback(new CallbacksPaho(client, this.guiLayout));
+        client.setCallback(new CallbacksPaho());
     }
 
     public static void listen(final String topic) throws Exception {
@@ -75,5 +69,26 @@ public class ListenerPaho {
 
             throw ex;
         }
+    }
+
+    public static void startMqttListener() {
+        try {
+            ListenerPaho.connect(Configuration.getBrokerAddress());
+
+            for (final String topic : Configuration.getTopics()) {
+                ListenerPaho.listen(topic);
+            }
+        }
+        catch (final Exception ex) {
+            log.warn("connect", ex);
+
+            throw new RuntimeException(ex);
+        }
+
+        log.debug("listener started");
+    }
+
+    public static MqttClient getClient() {
+        return client;
     }
 }

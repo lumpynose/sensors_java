@@ -7,7 +7,6 @@ import java.awt.Toolkit;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,57 +28,26 @@ public class MainPaho {
     }
 
     private final static Logger log = LogManager.getLogger(MainPaho.class);
-    private static ISensors guiLayout;
-    private static ListenerPaho listener;
-
-    public static void startMqttListener() {
-        getProps();
-
-        try {
-            listener.connect(Configuration.getBrokerAddress());
-
-            for (final String topic : Configuration.getTopics()) {
-                listener.listen(topic);
-            }
-        }
-        catch (final Exception ex) {
-            log.warn("connect", ex);
-
-            throw new RuntimeException(ex);
-        }
-
-        log.debug("listener started");
-    }
-
-    private static void getProps() {
-        try {
-            Configuration.loadConfiguration();
-        }
-        catch (final ConfigurationException ex) {
-            log.error("loadConfiguration", ex);
-
-            throw new RuntimeException(ex);
-        }
-    }
+    private static ISensors gui;
 
     public static void main(final String[] args) {
+        guiStart();
+
+        Configuration.loadProperties();
+
+        ListenerPaho.startMqttListener();
+    }
+
+    private static void guiStart() {
         Toolkit.getDefaultToolkit().getScreenSize();
 
         if (GraphicsEnvironment.isHeadless()) {
-            guiLayout = new SensorsNull();
+            gui = new SensorsNull();
         }
         else {
-            guiLayout = new Sensors();
+            gui = new Sensors();
         }
 
-        listener = new ListenerPaho(guiLayout);
-
-        guiSetup();
-
-        startMqttListener();
-    }
-
-    private static void guiSetup() {
         if (Desktop.isDesktopSupported()) {
             log.debug("desktop supported");
         }
@@ -98,7 +66,7 @@ public class MainPaho {
             javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
                 @Override
                 public void run() {
-                    guiLayout.setup();
+                    gui.setup();
                 }
             });
         }
@@ -112,5 +80,9 @@ public class MainPaho {
 
             throw new RuntimeException(e);
         }
+    }
+
+    public static ISensors getGui() {
+        return gui;
     }
 }

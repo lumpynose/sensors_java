@@ -56,6 +56,17 @@ public class Configuration {
         return splitKeyValues;
     }
 
+    public static void loadProperties() {
+        try {
+            Configuration.loadConfiguration();
+        }
+        catch (final ConfigurationException ex) {
+            log.error("loadConfiguration", ex);
+
+            throw new RuntimeException(ex);
+        }
+    }
+
     public static TUnit getTUnit() {
         final String tunitProp = config.getString("tunit");
 
